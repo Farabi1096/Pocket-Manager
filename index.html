@@ -457,6 +457,13 @@
                     <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full border-2 border-white bg-red-500 shadow-sm animate-pulse"></span>
                     )}
                 </button>
+                
+                <NotificationSidebar 
+                    notifications={notifications} 
+                    isOpen={isNotifOpen} 
+                    onClose={() => setIsNotifOpen(false)} 
+                    isDarkMode={isDarkMode} 
+                />
                 </div>
             </div>
           );
@@ -1393,8 +1400,34 @@
 
         function App() {
           const [activeTab, setActiveTab] = useState('home');
-          const [currentDate, setCurrentDate] = useState(new Date());
-          const [salaryDate, setSalaryDate] = useState(25);
+          
+          // Define default cycle day constant
+          const DEFAULT_CYCLE_DAY = 25;
+          const [salaryDate, setSalaryDate] = useState(DEFAULT_CYCLE_DAY);
+          
+          // Logic to determine the default view month based on cycle
+          const [currentDate, setCurrentDate] = useState(() => {
+            const now = new Date();
+            // Initial check using default
+            if (now.getDate() >= DEFAULT_CYCLE_DAY) {
+                return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            }
+            return now;
+          });
+          
+          // Effect to update Current View when Cycle Date changes
+          useEffect(() => {
+            const now = new Date();
+            // Re-evaluate the "Current View" relative to today whenever the cycle date changes
+            if (now.getDate() >= salaryDate) {
+                // If today is past the start date, we are in the 'next' billing month
+                setCurrentDate(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+            } else {
+                // If today is before the start date, we are still in the 'current' calendar month's cycle
+                setCurrentDate(new Date(now.getFullYear(), now.getMonth(), 1));
+            }
+          }, [salaryDate]);
+          
           const [isDarkMode, setIsDarkMode] = useState(false);
           const [userName, setUserName] = useState(() => localStorage.getItem('userName') || '');
           const [showWelcome, setShowWelcome] = useState(!localStorage.getItem('userName'));
