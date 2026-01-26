@@ -1883,8 +1883,8 @@
                     <MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} />
                     <BalanceCard totalBalance={totalBalance} income={totalIncome} expense={totalExpense} isDarkMode={isDarkMode} />
                     <QuickActions isDarkMode={isDarkMode} onNavigate={setActiveTab} />
-                    {/* Added extra pb-32 to ensure content clears the bottom dock on scroll */}
-                    <div className={`${cardBgClass} rounded-t-[2.5rem] mt-2 px-6 pt-8 pb-32 min-h-screen shadow-[0_-10px_40px_rgba(0,0,0,0.02)] animate-slide-up-fade transition-colors duration-300 relative`} style={{ animationDelay: '0.2s' }}>
+                    {/* Added responsive pb-32 for mobile, md:pb-8 for desktop */}
+                    <div className={`${cardBgClass} rounded-t-[2.5rem] mt-2 px-6 pt-8 pb-32 md:pb-8 min-h-screen shadow-[0_-10px_40px_rgba(0,0,0,0.02)] animate-slide-up-fade transition-colors duration-300 relative`} style={{ animationDelay: '0.2s' }}>
                       <div className="flex justify-between items-center mb-6">
                         <h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Recent Activity</h3>
                       </div>
@@ -1913,7 +1913,7 @@
                   </div>
                 );
                 case 'wallet': return (
-                    <div key="wallet" className="px-6 pb-32 animate-page-enter mt-4">
+                    <div key="wallet" className="px-6 pb-32 md:pb-8 animate-page-enter mt-4">
                         <div className={`p-6 rounded-[2rem] shadow-sm mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                             <span className="text-xs font-bold uppercase tracking-widest opacity-60 block mb-1">Total Assets</span>
                             <h3 className={`text-3xl font-bold ${textColor}`} style={textStyle}>${totalAssets.toLocaleString()}</h3>
@@ -1940,7 +1940,7 @@
                     </div>
                 );
                 case 'loans': return (
-                    <div key="loans" className="px-6 pb-32 animate-page-enter mt-4">
+                    <div key="loans" className="px-6 pb-32 md:pb-8 animate-page-enter mt-4">
                       <div className="flex gap-4 mb-8">
                         <div className={`flex-1 p-5 rounded-[1.5rem] shadow-sm ${isDarkMode ? 'bg-red-500/10' : 'bg-red-50'}`}>
                           <div className="flex items-center gap-2 mb-2 opacity-80"><ArrowDownLeft size={16} className="text-red-500" /><span className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Borrowed</span></div>
@@ -1965,7 +1965,7 @@
                     </div>
                 );
                 case 'goals': return (
-                    <div key="goals" className="px-6 pb-32 animate-page-enter mt-4">
+                    <div key="goals" className="px-6 pb-32 md:pb-8 animate-page-enter mt-4">
                       <div className={`p-6 rounded-[2rem] shadow-lg mb-8 relative overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-[#052065]'}`}><div className="relative z-10 flex justify-between items-end"><div className="text-white"><span className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1 block">Total Saved</span><h3 className="text-3xl font-bold">${totalGoalSaved.toLocaleString()}</h3><p className="text-xs opacity-60 mt-1">Target: ${totalGoalTarget.toLocaleString()}</p></div><div className="w-16 h-16 rounded-full border-4 border-teal-400 flex items-center justify-center text-white font-bold">{totalGoalTarget > 0 ? Math.round((totalGoalSaved / totalGoalTarget) * 100) : 0}%</div></div><div className="absolute -right-6 -bottom-10 opacity-10"><Trophy size={120} color="white" /></div></div>
                       <div><div className="flex justify-between items-center mb-4"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Your Targets</h3></div><div className="flex flex-col gap-1">{filteredGoals.length > 0 ? (filteredGoals.map((goal, idx) => (<GoalItem key={goal.id} item={goal} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingGoal(item); setIsAddGoalModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No goals set yet.</p>)}</div></div>
                       <button 
@@ -1978,7 +1978,7 @@
                     </div>
                 );
                 case 'subs': return (
-                    <div key="subs" className="px-6 pb-32 animate-page-enter mt-4">
+                    <div key="subs" className="px-6 pb-32 md:pb-8 animate-page-enter mt-4">
                       <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300`}>
                         <div className="flex justify-between items-center mb-6"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Active Subs</h3><span className="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">{filteredSubs.length}</span></div><div className="flex flex-col gap-1">{filteredSubs.length > 0 ? (filteredSubs.map((sub, idx) => (<SubItem key={sub.id} item={sub} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingSub(item); setIsSubModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No subscriptions added.</p>)}</div>
                       </div>
@@ -1992,8 +1992,8 @@
                     </div>
                 );
                 case 'stats': return (
-                    // Added extra pb-48 to the container to ensure content clears the bottom dock on scroll
-                    <div key="stats" className="pb-48 animate-page-enter mt-4"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
+                    // Added responsive pb-32 for mobile, md:pb-8 for desktop
+                    <div key="stats" className="pb-32 md:pb-8 animate-page-enter mt-4"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
                           <div className="grid grid-cols-1 gap-y-3 mt-6"> 
                             {currentStatsData.map((d, i) => (
                               <div key={i} className="group relative overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 p-3 hover:border-gray-200 dark:hover:border-gray-600 transition-all cursor-pointer">
@@ -2002,7 +2002,7 @@
                 );
               case 'suggestions':
                 return (
-                  <div key="suggestions" className="px-6 pb-32 animate-page-enter mt-4">
+                  <div key="suggestions" className="px-6 pb-32 md:pb-8 animate-page-enter mt-4">
                     <div className="flex items-center justify-end mt-4 mb-6">
                         <button onClick={fetchGeminiAdvice} disabled={loadingGemini} className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50">{loadingGemini ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}{loadingGemini ? 'Analyzing...' : 'Ask AI'}</button>
                     </div>
@@ -2024,7 +2024,7 @@
                 );
               case 'profile':
                 return (
-                  <div key="profile" className="px-6 pb-32 animate-page-enter mt-6">
+                  <div key="profile" className="px-6 pb-32 md:pb-8 animate-page-enter mt-6">
                     <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-slide-up-fade transition-colors duration-300`}>
                       <div className={`flex items-center justify-between mb-8 pb-8 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                         <div className="flex items-center gap-4"><div className={`p-3 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>{isDarkMode ? <Moon size={20} className="text-gray-300" /> : <Sun size={20} className="text-indigo-600" />}</div><div><h3 className={`font-bold ${textColor}`} style={textStyle}>Dark Mode</h3><p className="text-xs text-gray-400 mt-1">Adjust screen brightness</p></div></div>
