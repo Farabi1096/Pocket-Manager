@@ -1992,8 +1992,8 @@
                     </div>
                 );
                 case 'stats': return (
-                    // Added extra pb-32 to the container to ensure content clears the bottom dock on scroll
-                    <div key="stats" className="pb-32 animate-page-enter mt-4"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
+                    // Added extra pb-48 to the container to ensure content clears the bottom dock on scroll
+                    <div key="stats" className="pb-48 animate-page-enter mt-4"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
                           <div className="grid grid-cols-1 gap-y-3 mt-6"> 
                             {currentStatsData.map((d, i) => (
                               <div key={i} className="group relative overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 p-3 hover:border-gray-200 dark:hover:border-gray-600 transition-all cursor-pointer">
