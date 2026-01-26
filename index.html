@@ -309,44 +309,60 @@
         const NotificationSidebar = ({ notifications, isOpen, onClose, isDarkMode }) => {
           return (
             <>
+              {/* Backdrop */}
               <div 
-                className={`fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+                className={`fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
                 onClick={onClose}
               />
+              
+              {/* Sidebar sliding from RIGHT - Glass/Blur Effect - Fixed Width */}
               <div 
-                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-800/95' : 'bg-white/95'} backdrop-blur-xl border-l ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}
+                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl`}
               >
                 <div className="flex flex-col h-full">
-                  <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700">
-                    <h3 className={`font-bold text-lg ${isDarkMode ? 'text-white' : 'text-navy'}`}>Notifications</h3>
+                  {/* Header with Mobile Safe Area Padding (pt-16) */}
+                  <div className={`flex justify-between items-end px-6 pb-6 pt-16 border-b shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                     <div className="flex items-center gap-3">
-                       <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">{notifications.length}</span>
-                       <button onClick={onClose} className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10"><X size={20} className={isDarkMode ? 'text-gray-400' : 'text-gray-500'} /></button>
+                      <h3 className={`font-bold text-2xl tracking-tight ${isDarkMode ? 'text-white' : 'text-[#052065]'}`}>Notifications</h3>
+                      {notifications.length > 0 && (
+                          <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+                              {notifications.length}
+                          </span>
+                      )}
                     </div>
+                    <button onClick={onClose} className={`p-2 rounded-full transition-colors active:scale-95 ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}>
+                        <X size={24} />
+                    </button>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                  
+                  {/* Scrollable List */}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                     {notifications.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center h-40 text-gray-400">
-                        <BellRing size={32} className="mb-2 opacity-20" />
-                        <p className="text-sm">No new notifications</p>
+                      <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-60">
+                        <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+                            <BellRing size={32} className="opacity-30" />
+                        </div>
+                        <p className="text-sm font-medium">All caught up!</p>
                       </div>
                     ) : (
                       notifications.map((notif, idx) => (
-                        <div key={idx} className={`p-4 rounded-2xl flex items-start gap-3 transition-all hover:scale-[1.02] ${isDarkMode ? 'bg-gray-700/50 hover:bg-gray-700' : 'bg-gray-50 hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-100'}`}>
-                          <div className={`p-2.5 rounded-xl shrink-0 ${notif.type === 'alert' ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500'}`}>
-                            {notif.type === 'alert' ? <AlertCircle size={18} /> : <Clock size={18} />}
+                        <div key={idx} className={`p-4 rounded-[1.25rem] flex items-start gap-4 transition-all duration-200 ${isDarkMode ? 'bg-gray-800/60 border border-gray-700/50 hover:bg-gray-800' : 'bg-white border border-gray-100 shadow-sm hover:shadow-md'}`}>
+                          <div className={`p-3 rounded-2xl shrink-0 ${notif.type === 'alert' ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500'}`}>
+                            {notif.type === 'alert' ? <AlertCircle size={20} /> : <Clock size={20} />}
                           </div>
                           <div>
-                            <h4 className={`text-sm font-bold mb-1 ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>{notif.title}</h4>
+                            <h4 className={`text-sm font-bold mb-1 leading-tight ${isDarkMode ? 'text-gray-100' : 'text-gray-800'}`}>{notif.title}</h4>
                             <p className={`text-xs leading-relaxed ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{notif.message}</p>
                           </div>
                         </div>
                       ))
                     )}
                   </div>
-                  <div className="p-4 border-t border-gray-100 dark:border-gray-700">
-                    <button onClick={onClose} className={`w-full py-3 rounded-xl text-sm font-bold ${isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}>
-                      Close
+                  
+                  {/* Footer Action */}
+                  <div className={`p-6 border-t shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+                    <button onClick={onClose} className={`w-full py-4 rounded-2xl text-sm font-bold transition-all active:scale-[0.98] shadow-lg ${isDarkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-[#052065] text-white hover:opacity-90'}`}>
+                      Mark all as read
                     </button>
                   </div>
                 </div>
@@ -381,8 +397,8 @@
 
           return (
             <div 
-                // Increased top padding (pt-12) for mobile safe area, normalized (md:py-6) for desktop
-                className={`sticky top-0 z-50 flex justify-between items-center px-6 pt-12 pb-4 md:py-6 animate-fade-in transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
+                // Increased top padding (pt-16) for mobile safe area, normalized (md:py-6) for desktop
+                className={`sticky top-0 z-50 flex justify-between items-center px-6 pt-16 pb-4 md:py-6 animate-fade-in transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
                 style={{ color: isDarkMode ? 'white' : theme.navy }}
             >
                 <div className="flex-1 mr-4">
@@ -441,13 +457,6 @@
                     <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full border-2 border-white bg-red-500 shadow-sm animate-pulse"></span>
                     )}
                 </button>
-                
-                <NotificationSidebar 
-                    notifications={notifications} 
-                    isOpen={isNotifOpen} 
-                    onClose={() => setIsNotifOpen(false)} 
-                    isDarkMode={isDarkMode} 
-                />
                 </div>
             </div>
           );
@@ -2115,6 +2124,14 @@
               <WalletDetailsModal isOpen={isWalletModalOpen} onClose={() => setIsWalletModalOpen(false)} onSave={handleSaveWallet} wallet={selectedWallet} isDarkMode={isDarkMode} showToast={showToast} isNew={!selectedWallet} />
               
               <div className={`fixed bottom-0 w-full max-w-md border-t px-6 py-4 pb-8 flex justify-between items-center z-40 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-100'}`}>{['home', 'stats', 'wallet', 'suggestions', 'profile'].map((tab) => { const isActive = activeTab === tab; const Icons = { home: Home, stats: PieChart, wallet: Wallet, suggestions: Sparkles, profile: Settings }; const Icon = Icons[tab]; return (<button key={tab} onClick={() => setActiveTab(tab)} className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? 'scale-110' : 'text-gray-400 hover:text-gray-500 scale-100'}`} style={{ color: isActive ? theme.royalBlue : isDarkMode ? '#6b7280' : undefined }}><Icon size={24} strokeWidth={isActive ? 2.5 : 2} />{isActive && (<span className="w-1 h-1 rounded-full bg-current animate-fade-in mt-1"></span>)}</button>); })}</div>
+              
+              <NotificationSidebar 
+                  notifications={notifications} 
+                  isOpen={isNotifOpen} 
+                  onClose={() => setIsNotifOpen(false)} 
+                  isDarkMode={isDarkMode} 
+              />
+              
               <style>{` .custom-scrollbar::-webkit-scrollbar { width: 0px; background: transparent; } :root { --ease-ios: cubic-bezier(0.16, 1, 0.3, 1); } @keyframes pageEnter { from { opacity: 0; transform: scale(0.99) translateY(5px); } to { opacity: 1; transform: scale(1) translateY(0); } } @keyframes slideUpFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } } @keyframes staggerIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } } @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } } @keyframes bounceIn { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } } @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } } .animate-fade-in { animation: fade-in 0.3s ease-out forwards; } .animate-page-enter { animation: pageEnter 0.4s var(--ease-ios) forwards; } .animate-slide-up-fade { animation: slideUpFade 0.5s var(--ease-ios) backwards; } .animate-stagger-in { animation: staggerIn 0.3s var(--ease-ios) forwards; } .animate-scale-in { animation: scaleIn 0.4s var(--ease-ios) backwards; } .animate-bounce-in { animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; } `}</style>
             </div>
           );
