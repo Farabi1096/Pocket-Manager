@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Finance Tracker</title>
     
     <!-- Tailwind CSS -->
@@ -15,7 +15,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            overscroll-behavior-y: none; /* Prevents rubber-band scrolling on iOS */
+            -webkit-tap-highlight-color: transparent; /* Removes tap highlight color */
+        }
         
         /* Hide scrollbar for Chrome, Safari and Opera */
         .custom-scrollbar::-webkit-scrollbar { width: 0px; background: transparent; }
@@ -43,9 +47,9 @@
         .animate-bounce-in { animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
     </style>
 </head>
-<body class="bg-gray-100 h-screen w-full flex justify-center items-center overflow-hidden">
+<body class="bg-gray-100 h-[100dvh] w-full flex justify-center items-center overflow-hidden">
 
-    <div id="root" class="w-full h-full max-w-md mx-auto relative shadow-2xl bg-gray-50"></div>
+    <div id="root" class="w-full h-full max-w-md mx-auto relative shadow-2xl bg-gray-50 flex flex-col"></div>
 
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useMemo, useCallback } from 'https://esm.sh/react@18.2.0';
@@ -58,7 +62,7 @@
             Target, Sparkles, TrendingDown, TrendingUp, AlertCircle, Loader2, 
             User, Calendar, Trophy, Repeat, Plane, Smartphone, Gift, Trash2, 
             Landmark, BellRing, Clock, Info, Briefcase, Building, MapPin, Mail, 
-            Phone, ChevronDown, PlusCircle, Edit2, Heart
+            Phone, ChevronDown, PlusCircle, Edit2, Heart, Link as LinkIcon
         } from 'https://esm.sh/lucide-react@0.344.0';
 
         // --- API Configuration ---
@@ -318,11 +322,11 @@
               {/* Sidebar sliding from RIGHT - Glass/Blur Effect - Fixed Width */}
               {/* Optimized transition duration and bezier curve for smoothness */}
               <div 
-                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl will-change-transform`}
+                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl will-change-transform pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}
               >
                 <div className="flex flex-col h-full">
-                  {/* Header with Mobile Safe Area Padding (pt-16) */}
-                  <div className={`flex justify-between items-end px-6 pb-6 pt-16 border-b shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+                  {/* Header with Safe Area Handling */}
+                  <div className={`flex justify-between items-center px-6 py-6 border-b shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                     <div className="flex items-center gap-3">
                       <h3 className={`font-bold text-2xl tracking-tight ${isDarkMode ? 'text-white' : 'text-[#052065]'}`}>Notifications</h3>
                       {notifications.length > 0 && (
@@ -398,8 +402,8 @@
 
           return (
             <div 
-                // Increased top padding (pt-16) for mobile safe area, normalized (md:py-6) for desktop
-                className={`sticky top-0 z-50 flex justify-between items-center px-6 pt-16 pb-4 md:py-6 animate-fade-in transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
+                // Optimized Safe Area Padding: Works for Notch (iOS) and Dynamic Bars (Android)
+                className={`sticky top-0 z-50 flex justify-between items-center px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-4 animate-fade-in transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
                 style={{ color: isDarkMode ? 'white' : theme.navy }}
             >
                 <div className="flex-1 mr-4">
@@ -526,33 +530,60 @@
         const WalletCard = React.memo(({ wallet, isDarkMode, onClick, onDelete }) => {
           const Icon = wallet.type === 'Bank' ? Landmark : (wallet.type === 'Cash' ? Banknote : CreditCard);
           
+          const bankName = wallet.details?.bankName || wallet.name;
+
+          // Helper to generate a unique gradient based on the bank name
+          const getGradientFromStr = (str) => {
+             let hash = 0;
+             for (let i = 0; i < str.length; i++) {
+               hash = str.charCodeAt(i) + ((hash << 5) - hash);
+             }
+             const c1 = (hash & 0x00FFFFFF).toString(16).toUpperCase().padStart(6, '0');
+             const c2 = ((hash * 123) & 0x00FFFFFF).toString(16).toUpperCase().padStart(6, '0');
+             return `linear-gradient(135deg, #${c1} 0%, #${c2} 100%)`;
+          };
+
+          // If it's a Bank, use the generated gradient. For Cash/Other, use the set color.
+          const bgStyle = wallet.type === 'Bank' 
+            ? { background: getGradientFromStr(bankName) } 
+            : { background: wallet.color || theme.royalBlue };
+
           return (
             <div 
               onClick={onClick}
               className="relative overflow-hidden p-6 rounded-[2rem] text-white shadow-lg transition-transform hover:scale-[1.02] cursor-pointer mb-4 group"
-              style={{ background: wallet.color || theme.royalBlue }}
+              style={bgStyle}
             >
-              <div className="absolute top-[-20px] right-[-20px] w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-              <div className="absolute bottom-[-20px] left-[-20px] w-24 h-24 bg-black/10 rounded-full blur-xl"></div>
+              {/* Decorative Background Elements */}
+              <div className="absolute top-[-40px] right-[-40px] w-48 h-48 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="absolute bottom-[-30px] left-[-30px] w-32 h-32 bg-black/20 rounded-full blur-2xl pointer-events-none"></div>
               
               <div className="relative z-10 flex flex-col h-full justify-between min-h-[120px]">
                 <div className="flex justify-between items-start">
-                  <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <Icon size={24} className="text-white" />
+                  <div className="w-12 h-12 bg-white/20 rounded-xl backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/10 shadow-inner">
+                        <Icon size={24} className="text-white drop-shadow-md" />
                   </div>
-                  {wallet.details?.accountNumber && <span className="font-mono opacity-80 text-sm tracking-widest">•••• {wallet.details.accountNumber.slice(-4)}</span>}
+                  {wallet.details?.accountNumber && (
+                    <div className="text-right">
+                         <span className="font-mono opacity-60 text-[10px] uppercase block tracking-wider">Account</span>
+                         <span className="font-mono font-bold text-sm tracking-widest text-shadow-sm">•••• {wallet.details.accountNumber.slice(-4)}</span>
+                    </div>
+                  )}
                 </div>
                 
-                <div className="mt-4">
-                  <p className="opacity-80 text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
-                     {wallet.name} {wallet.isDefault && <span className="bg-white/20 px-1.5 rounded text-[8px]">Default</span>}
-                  </p>
-                  <h3 className="text-2xl font-bold tracking-tight">${wallet.balance?.toLocaleString() || '0'}</h3>
+                <div className="mt-6">
+                  <div className="flex items-center gap-2 mb-1">
+                      <p className="opacity-90 text-xs font-bold uppercase tracking-wider text-shadow-sm truncate max-w-[200px]">
+                         {wallet.name}
+                      </p>
+                      {wallet.isDefault && <span className="bg-white/25 px-1.5 py-0.5 rounded text-[8px] font-bold border border-white/20">Default</span>}
+                  </div>
+                  <h3 className="text-2xl font-bold tracking-tight text-shadow-md">${wallet.balance?.toLocaleString() || '0'}</h3>
                 </div>
               </div>
               
               <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="bg-white/20 p-1.5 rounded-full"><Edit2 size={14} /></div>
+                  <div className="bg-black/20 hover:bg-black/40 p-2 rounded-full backdrop-blur-sm transition-colors border border-white/10"><Edit2 size={14} /></div>
               </div>
             </div>
           );
@@ -726,20 +757,23 @@
                 const currentGradient = barGradients[i % barGradients.length];
                 
                 return (
-                  <div key={i} className="flex flex-col items-center flex-1 h-full justify-end group relative cursor-pointer">
+                  // RESTORED: Container Styling ("Shadow Box")
+                  <div 
+                    key={i} 
+                    className={`flex flex-col items-center flex-1 h-full justify-end group relative cursor-pointer rounded-2xl pb-2 pt-4 transition-all ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-50 hover:bg-gray-100'}`}
+                  >
                     {/* Amount Label - Floating above */}
                     <div 
                         className={`absolute -top-8 transition-all duration-500 transform 
                         ${bar.value > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
-                        text-[10px] font-bold ${isDarkMode ? 'text-white' : ''} bg-white dark:bg-gray-700 px-2 py-1 rounded-full whitespace-nowrap z-10 shadow-sm border border-gray-100 dark:border-gray-600`}
-                        style={{ color: isDarkMode ? undefined : theme.navy }}
+                        text-[10px] font-bold px-2 py-1 whitespace-nowrap z-10
+                        ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}
                     >
                       ${bar.value >= 1000 ? (bar.value/1000).toFixed(1) + 'k' : Math.round(bar.value)}
                     </div>
 
-                    {/* The Bar Track */}
-                    <div className="w-full max-w-[16px] sm:max-w-[24px] h-full rounded-full bg-gray-100 dark:bg-gray-800 relative overflow-hidden flex items-end">
-                        {/* The Bar Fill */}
+                    {/* The Bar - Full width of column inside container, single fill (no track) */}
+                    <div className="w-3 sm:w-4 h-[80%] flex items-end">
                         <div 
                           className={`w-full rounded-full relative transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
                           style={{ 
@@ -752,7 +786,7 @@
                     </div>
                     
                     {/* Day Label */}
-                    <span className={`mt-3 text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    <span className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`}>
                         {bar.day.charAt(0)}
                     </span>
                   </div>
@@ -1233,6 +1267,7 @@
             name: '',
             type: 'Bank',
             bankName: '',
+            bankWebsite: '', // Added field for website
             accountNumber: '',
             holderName: '',
             district: '',
@@ -1247,6 +1282,7 @@
                     name: wallet.name || '',
                     type: wallet.type || 'Bank',
                     bankName: wallet.details?.bankName || '',
+                    bankWebsite: wallet.details?.bankWebsite || '', // Load website if exists
                     accountNumber: wallet.details?.accountNumber || '',
                     holderName: wallet.details?.holderName || '',
                     district: wallet.details?.district || '',
@@ -1256,7 +1292,7 @@
                 });
             } else {
                 setFormData({
-                    name: '', type: 'Bank', bankName: '', accountNumber: '', holderName: '', district: '', branch: '', mobile: '', email: ''
+                    name: '', type: 'Bank', bankName: '', bankWebsite: '', accountNumber: '', holderName: '', district: '', branch: '', mobile: '', email: ''
                 });
             }
           }, [wallet, isOpen]);
@@ -1279,6 +1315,7 @@
                   isDefault: false,
                   details: {
                       bankName: formData.bankName,
+                      bankWebsite: formData.bankWebsite, // Save website
                       accountNumber: formData.accountNumber,
                       holderName: formData.holderName,
                       district: formData.district,
@@ -1333,6 +1370,17 @@
                                     <input type="text" name="bankName" value={formData.bankName || ''} onChange={handleChange} placeholder="e.g. Chase Bank" className="bg-transparent w-full font-medium outline-none" />
                                 </div>
                             </div>
+                            
+                            {/* New Website Input Field */}
+                            <div>
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">Bank Website (For Logo)</label>
+                                <div className={`flex items-center px-4 py-3 rounded-xl border transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}>
+                                    <LinkIcon size={18} className="mr-3 opacity-50" />
+                                    <input type="text" name="bankWebsite" value={formData.bankWebsite || ''} onChange={handleChange} placeholder="e.g. sc.com" className="bg-transparent w-full font-medium outline-none" />
+                                </div>
+                                <p className="text-[10px] text-gray-400 mt-1 ml-1">Paste the bank's official website URL to fetch the correct logo.</p>
+                            </div>
+
                             <div>
                                 <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">Account Number</label>
                                 <div className={`flex items-center px-4 py-3 rounded-xl border transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}>
@@ -1469,6 +1517,10 @@
           const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
           const [selectedWallet, setSelectedWallet] = useState(null);
 
+          // NEW STATES for Category Breakdown Expansion
+          // Replaced isCategoryModalOpen with simple expansion state
+          const [expandedCategory, setExpandedCategory] = useState(null);
+
           const [isSearchOpen, setIsSearchOpen] = useState(false);
           const [searchQuery, setSearchQuery] = useState('');
           const [geminiData, setGeminiData] = useState(null);
@@ -1500,6 +1552,16 @@
               setUserName(name);
               localStorage.setItem('userName', name);
               setShowWelcome(false);
+          };
+
+          // Handler for toggling category expansion
+          const toggleCategory = (category) => {
+              if (category === 'No Data') return;
+              if (expandedCategory === category) {
+                  setExpandedCategory(null);
+              } else {
+                  setExpandedCategory(category);
+              }
           };
 
           // Notification Logic
@@ -1815,7 +1877,7 @@
             }, {});
           }, [filteredTransactions]);
 
-          // --- FIXED CHART COLORS: Vibrant Palette for Donut ---
+          // --- FIXED CHART COLORS: Professional Palette for Donut ---
           const currentStatsData = useMemo(() => {
             const expenseTx = dateFilteredTransactions.filter(t => t.type === 'expense');
             const catSpending = expenseTx.reduce((acc, t) => {
@@ -1824,16 +1886,23 @@
                 return acc;
             }, {});
             
-            // Vibrant colors specifically chosen to be suitable and not dark
-            const vibrantPalette = [
-              theme.royalBlue, theme.skyBlue, theme.teal, theme.mint, 
-              theme.purple, theme.hotPink, theme.amber, theme.salmon
+            // Professional palette: Blues, Teals, and Purples to match the dashboard aesthetic
+            // Avoiding neon pinks/yellows/reds to keep it looking cohesive
+            const professionalPalette = [
+              theme.royalBlue, 
+              theme.teal, 
+              theme.navy, 
+              theme.skyBlue, 
+              theme.purple, 
+              theme.darkGreen, 
+              theme.darkPurple, 
+              theme.aqua
             ];
 
             const data = Object.entries(catSpending).map(([label, value], index) => ({
                 label,
                 value,
-                color: vibrantPalette[index % vibrantPalette.length]
+                color: professionalPalette[index % professionalPalette.length]
             }));
             
             data.sort((a, b) => b.value - a.value);
@@ -2031,11 +2100,58 @@
                 case 'stats': return (
                     // Added responsive pb-40 for mobile, md:pb-8 for desktop
                     <div key="stats" className="pb-40 md:pb-8 animate-page-enter mt-4"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
-                          <div className="grid grid-cols-1 gap-y-3 mt-6"> 
+                          <div className="grid grid-cols-1 gap-y-2 mt-6"> 
                             {currentStatsData.map((d, i) => (
-                              <div key={i} className="group relative overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 p-3 hover:border-gray-200 dark:hover:border-gray-600 transition-all cursor-pointer">
-                                  <div className="absolute bottom-0 left-0 h-1 bg-current opacity-20 transition-all duration-1000 ease-out" style={{ width: `${(d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100}%`, color: d.color }} />
-                                  <div className="flex items-center justify-between relative z-10"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full flex items-center justify-center bg-white dark:bg-gray-700 shadow-sm text-xs font-bold" style={{ color: d.color }}>{d.label.charAt(0)}</div><span className={`text-sm font-semibold tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>{d.label}</span></div><div className="flex items-center gap-3"><span className={`text-sm font-bold tabular-nums ${textColor}`} style={textStyle}>{d.value === 1 && d.label === 'No Data' ? '-' : `$${d.value.toLocaleString()}`}</span><span className="text-[10px] font-bold px-2 py-1 rounded-md bg-white dark:bg-gray-700 shadow-sm text-gray-500 min-w-[45px] text-center">{d.value === 1 && d.label === 'No Data' ? '0%' : `${Math.round((d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100)}%`}</span></div></div></div>))}</div></div><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.2s' }}><h3 className={`font-bold mb-8 ${textColor}`} style={textStyle}>Weekly Spending</h3><BarChart data={last7DaysChartData} isDarkMode={isDarkMode} /></div></div></div>
+                              // Updated background color logic: subtle gray for light mode, transparent white for dark mode
+                              // ADDED onClick handler to toggle accordion dropdown
+                              <div 
+                                key={i} 
+                                onClick={() => toggleCategory(d.label)}
+                                className={`group relative overflow-hidden rounded-2xl p-3 transition-all cursor-pointer ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-50 hover:bg-gray-100'} active:scale-[0.98]`}
+                              >
+                                  {/* Progress bar background - subtle tint based on category color */}
+                                  <div className="absolute bottom-0 left-0 h-full opacity-[0.05] transition-all duration-1000 ease-out" style={{ width: `${(d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100}%`, backgroundColor: d.color }} />
+                                  
+                                  <div className="flex items-center justify-between relative z-10">
+                                      <div className="flex items-center gap-3">
+                                          {/* Icon circle - Flat with color tint */}
+                                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold" style={{ color: d.color, backgroundColor: d.color + '20' }}>{d.label.charAt(0)}</div>
+                                          <span className={`text-sm font-semibold tracking-tight ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>{d.label}</span>
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                          <span className={`text-sm font-bold tabular-nums ${textColor}`} style={textStyle}>{d.value === 1 && d.label === 'No Data' ? '-' : `$${d.value.toLocaleString()}`}</span>
+                                          {/* Percentage Badge - clean text */}
+                                          <span className={`text-[10px] font-bold px-2 py-1 rounded-lg min-w-[45px] text-center ${isDarkMode ? 'text-gray-400 bg-black/20' : 'text-gray-500 bg-white'}`}>{d.value === 1 && d.label === 'No Data' ? '0%' : `${Math.round((d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100)}%`}</span>
+                                          <ChevronDown size={14} className={`transform transition-transform duration-300 ${expandedCategory === d.label ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                                      </div>
+                                  </div>
+
+                                  {/* Accordion Dropdown Content */}
+                                  {expandedCategory === d.label && (
+                                    <div className="mt-3 pt-3 border-t border-dashed border-gray-200 dark:border-gray-700/50 space-y-2 animate-fade-in cursor-default" onClick={(e) => e.stopPropagation()}>
+                                        {dateFilteredTransactions
+                                            .filter(t => t.category === d.label && t.type === 'expense')
+                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                            .map(t => (
+                                                <div key={t.id} className="flex justify-between items-center text-xs px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                                    <div className="flex flex-col">
+                                                        <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.title}</span>
+                                                        <span className="text-[10px] text-gray-500">{formatDisplayDate(t.date)}</span>
+                                                    </div>
+                                                    <span className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>${Math.abs(t.amount).toLocaleString()}</span>
+                                                </div>
+                                            ))
+                                        }
+                                        {dateFilteredTransactions.filter(t => t.category === d.label && t.type === 'expense').length === 0 && (
+                                            <p className="text-center text-[10px] text-gray-400 italic py-1">No recent transactions</p>
+                                        )}
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.2s' }}><h3 className={`font-bold mb-8 ${textColor}`} style={textStyle}>Weekly Spending</h3><BarChart data={last7DaysChartData} isDarkMode={isDarkMode} /></div></div></div>
                 );
               case 'suggestions':
                 return (
