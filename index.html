@@ -21,14 +21,12 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Hide scrollbar for Chrome, Safari and Opera */
+        /* Hide scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 0px; background: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* Hide scrollbar for IE, Edge and Firefox */
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Smooth scrolling for iOS */
+        /* Smooth scrolling */
         .scroll-smooth { -webkit-overflow-scrolling: touch; }
 
         /* Animations */
@@ -47,10 +45,11 @@
         .animate-bounce-in { animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
     </style>
 </head>
-<!-- Removed centered flex layout to allow full-screen app feel -->
-<body class="bg-gray-100 h-[100dvh] w-full overflow-hidden fixed inset-0">
+<!-- Restored Flex Center and Background for "Mobile Version" feel on Desktop -->
+<body class="bg-gray-100 h-[100dvh] w-full flex justify-center items-center overflow-hidden fixed inset-0">
 
-    <div id="root" class="w-full h-full"></div>
+    <!-- Added max-w-md and shadow to create the phone frame -->
+    <div id="root" class="w-full h-full max-w-md mx-auto relative shadow-2xl bg-gray-50 flex flex-col overflow-hidden"></div>
 
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useMemo, useCallback } from 'https://esm.sh/react@18.2.0';
@@ -316,13 +315,13 @@
             <>
               {/* Backdrop */}
               <div 
-                className={`fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+                className={`fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
                 onClick={onClose}
               />
               
               {/* Sidebar sliding from RIGHT - Glass/Blur Effect - Fixed Width */}
               <div 
-                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl`}
+                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl will-change-transform pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}
               >
                 <div className="flex flex-col h-full">
                   {/* Header with Mobile Safe Area Padding (pt-16) */}
@@ -402,8 +401,8 @@
 
           return (
             <div 
-                // Increased top padding (pt-16) for mobile safe area, normalized (md:py-6) for desktop
-                className={`sticky top-0 z-50 flex justify-between items-center px-6 pt-16 pb-4 md:py-6 animate-fade-in transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
+                // Absolute positioning relative to the centered container
+                className={`absolute top-0 w-full z-50 flex justify-between items-center px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-4 transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
                 style={{ color: isDarkMode ? 'white' : theme.navy }}
             >
                 <div className="flex-1 mr-4">
@@ -462,6 +461,13 @@
                     <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full border-2 border-white bg-red-500 shadow-sm animate-pulse"></span>
                     )}
                 </button>
+                
+                <NotificationSidebar 
+                    notifications={notifications} 
+                    isOpen={isNotifOpen} 
+                    onClose={() => setIsNotifOpen(false)} 
+                    isDarkMode={isDarkMode} 
+                />
                 </div>
             </div>
           );
@@ -757,32 +763,29 @@
                 const currentGradient = barGradients[i % barGradients.length];
                 
                 return (
-                  // RESTORED: Container Styling ("Shadow Box")
+                  // Shadow Box acting as container and track
                   <div 
                     key={i} 
-                    className={`flex flex-col items-center flex-1 h-full justify-end group relative cursor-pointer rounded-2xl pb-2 pt-4 transition-all ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-50 hover:bg-gray-100'}`}
+                    className={`flex flex-col items-center flex-1 h-full justify-end group relative cursor-pointer rounded-2xl overflow-hidden transition-all ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-50 hover:bg-gray-100'}`}
                   >
-                    {/* Amount Label - Floating above */}
+                    {/* The Bar Fill - Fills the container width, height based on value */}
                     <div 
-                        className={`absolute -top-8 transition-all duration-500 transform 
-                        ${bar.value > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
-                        text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap z-10
-                        ${isDarkMode ? 'bg-white/5 text-gray-200' : 'bg-gray-50 text-gray-600'}`}
+                        className="absolute bottom-0 left-0 w-full rounded-b-2xl transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] opacity-80 group-hover:opacity-100"
+                        style={{ 
+                          height: mounted ? `${Math.max(heightPct, 0)}%` : '0%', 
+                          background: currentGradient,
+                          // Add top radius if bar is tall enough, otherwise just bottom
+                          borderTopLeftRadius: heightPct > 95 ? '1rem' : '0',
+                          borderTopRightRadius: heightPct > 95 ? '1rem' : '0',
+                        }}
+                    ></div>
+
+                    {/* Amount Label - Floating above visually (z-index) */}
+                    <div 
+                        className={`absolute top-2 z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap 
+                        ${isDarkMode ? 'text-white bg-black/20' : 'text-gray-600 bg-white/60'}`}
                     >
                       ${bar.value >= 1000 ? (bar.value/1000).toFixed(1) + 'k' : Math.round(bar.value)}
-                    </div>
-
-                    {/* The Bar - Full width of column inside container, single fill (no track) */}
-                    <div className="w-3 sm:w-4 h-[80%] flex items-end">
-                        <div 
-                          className={`w-full rounded-full relative transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
-                          style={{ 
-                            height: mounted ? `${Math.max(heightPct, 0)}%` : '0%', 
-                            background: currentGradient,
-                            opacity: bar.value === 0 ? 0 : 1
-                          }}
-                        >
-                        </div>
                     </div>
                     
                     {/* Day Label - Fixed at bottom, on top of bar */}
@@ -848,7 +851,7 @@
               amount: parseFloat(amount), 
               title, 
               type, 
-              category: type === 'transfer' ? 'Transfer' : category, 
+              category: type === 'transfer' ? 'Transfer' : (type === 'income' ? 'Income' : category), 
               account, 
               toAccount: type === 'transfer' ? toAccount : null,
               note,
@@ -916,7 +919,7 @@
 
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Title</label><input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={type === 'transfer' ? "Transfer reason" : "What is this for?"} className={`w-full pb-2 border-b-2 bg-transparent outline-none font-medium text-lg transition-all ${isDarkMode ? 'border-gray-700 focus:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`} /></div>
                   
-                  {type !== 'transfer' && (
+                  {type === 'expense' && (
                     <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">Category</label><div className="flex flex-wrap gap-2">{categories.map(cat => (<button key={cat} type="button" onClick={() => setCategory(cat)} className={`px-4 py-2 rounded-full text-xs font-bold border transition-all ${category === cat ? (isDarkMode ? 'bg-white text-gray-900 border-white' : 'bg-gray-900 text-white border-gray-900') : (isDarkMode ? 'border-gray-700 text-gray-400 hover:border-gray-500' : 'border-gray-200 text-gray-500 hover:border-gray-400')}`}>{cat}</button>))}</div></div>
                   )}
                   
@@ -1029,7 +1032,7 @@
               setAmount(initialData.amount);
               setPerson(initialData.person);
               setType(initialData.type);
-              setDueDate(initialData.dueDate ? formatDateToISO(new Date(initialData.dueDate)) : ''); 
+              setDueDate(initialData.dueDate ? formatDateToISO(new Date(initialData.dueDate)) : ''); 
             } else {
               setAmount(''); setPerson(''); setType('taken'); setDueDate('');
             }
@@ -1043,11 +1046,11 @@
                 if (showToast) showToast("Please enter an amount and person name", "error");
                 return;
             }
-            onSave({ 
+            onSave({ 
               id: initialData ? initialData.id : Date.now(),
-              amount: parseFloat(amount), 
-              person, 
-              type, 
+              amount: parseFloat(amount), 
+              person, 
+              type, 
               date: initialData ? initialData.date : formatDateToISO(new Date()),
               dueDate: dueDate ? new Date(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (initialData ? initialData.dueDate : 'No Due Date'),
               status: 'active'
@@ -1100,7 +1103,7 @@
               setName(initialData.name);
               setCost(initialData.cost);
               setCycle(initialData.cycle);
-              setNextDate(initialData.nextDate ? formatDateToISO(new Date(initialData.nextDate)) : ''); 
+              setNextDate(initialData.nextDate ? formatDateToISO(new Date(initialData.nextDate)) : ''); 
             } else {
               setName(''); setCost(''); setCycle('Monthly'); setNextDate('');
             }
@@ -1181,13 +1184,13 @@
                 if (showToast) showToast("Please enter a goal title and target amount", "error");
                 return;
             }
-            onSave({ 
+            onSave({ 
               id: initialData ? initialData.id : Date.now(),
-              title, 
-              target: parseFloat(target), 
+              title, 
+              target: parseFloat(target), 
               saved: parseFloat(saved) || 0,
               deadline: deadline ? new Date(deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date',
-              color: theme.royalBlue, 
+              color: theme.royalBlue, 
               icon: 'Target'
             });
             setTitle(''); setTarget(''); setSaved(''); setDeadline(''); onClose();
@@ -1195,7 +1198,7 @@
 
           return (
             <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center pointer-events-none">
-              <div 
+              <div 
                 className="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-auto transition-opacity animate-fade-in"
                 onClick={onClose}
               ></div>
@@ -2095,7 +2098,7 @@
                     </div>
                 );
                 case 'loans': return (
-                    // Updated to match AI Insights layout: px-6 on wrapper, w-full
+                    // Restored w-full and px-6 on wrapper
                     <div key="loans" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                       <div className="flex gap-4 mb-8">
                         <div className={`flex-1 p-5 rounded-[1.5rem] shadow-sm ${isDarkMode ? 'bg-red-500/10' : 'bg-red-50'}`}>
@@ -2121,7 +2124,7 @@
                     </div>
                 );
                 case 'goals': return (
-                    // Updated to match AI Insights layout: px-6 on wrapper, w-full
+                    // Restored w-full and px-6 on wrapper
                     <div key="goals" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                       <div className={`p-6 rounded-[2rem] shadow-lg mb-8 relative overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-[#052065]'}`}><div className="relative z-10 flex justify-between items-end"><div className="text-white"><span className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1 block">Total Saved</span><h3 className="text-3xl font-bold">${totalGoalSaved.toLocaleString()}</h3><p className="text-xs opacity-60 mt-1">Target: ${totalGoalTarget.toLocaleString()}</p></div><div className="w-16 h-16 rounded-full border-4 border-teal-400 flex items-center justify-center text-white font-bold">{totalGoalTarget > 0 ? Math.round((totalGoalSaved / totalGoalTarget) * 100) : 0}%</div></div><div className="absolute -right-6 -bottom-10 opacity-10"><Trophy size={120} color="white" /></div></div>
                       <div><div className="flex justify-between items-center mb-4"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Your Targets</h3></div><div className="flex flex-col gap-1">{filteredGoals.length > 0 ? (filteredGoals.map((goal, idx) => (<GoalItem key={goal.id} item={goal} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingGoal(item); setIsAddGoalModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No goals set yet.</p>)}</div></div>
@@ -2135,7 +2138,7 @@
                     </div>
                 );
                 case 'subs': return (
-                    // Updated to match AI Insights layout: px-6 on wrapper, w-full
+                    // Restored w-full and px-6 on wrapper
                     <div key="subs" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                       <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300`}>
                         <div className="flex justify-between items-center mb-6"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Active Subs</h3><span className="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">{filteredSubs.length}</span></div><div className="flex flex-col gap-1">{filteredSubs.length > 0 ? (filteredSubs.map((sub, idx) => (<SubItem key={sub.id} item={sub} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingSub(item); setIsSubModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No subscriptions added.</p>)}</div>
@@ -2288,7 +2291,7 @@
           const mainBgClass = isDarkMode ? 'bg-gray-900' : 'bg-gray-50';
 
           return (
-            <div className={`h-screen font-sans relative max-w-md mx-auto shadow-2xl overflow-hidden transition-colors duration-300 ${mainBgClass} flex flex-col`}>
+            <div className={`h-screen font-sans relative w-full shadow-2xl overflow-hidden transition-colors duration-300 ${mainBgClass} flex flex-col`}>
               {showWelcome && <WelcomeModal onSave={handleNameSave} isDarkMode={isDarkMode} />}
               <div className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth relative z-10" style={{ WebkitOverflowScrolling: 'touch' }}>
                   <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} searchQuery={searchQuery} setSearchQuery={setSearchQuery} notifications={notifications} isNotifOpen={isNotifOpen} setIsNotifOpen={setIsNotifOpen} activeTab={activeTab} userName={userName} />
@@ -2319,7 +2322,8 @@
               <AddGoalModal isOpen={isAddGoalModalOpen} onClose={() => setIsAddGoalModalOpen(false)} onSave={handleSaveGoal} onDelete={handleDeleteGoal} initialData={editingGoal} isDarkMode={isDarkMode} showToast={showToast} />
               <WalletDetailsModal isOpen={isWalletModalOpen} onClose={() => setIsWalletModalOpen(false)} onSave={handleSaveWallet} wallet={selectedWallet} isDarkMode={isDarkMode} showToast={showToast} isNew={!selectedWallet} />
               
-              <div className={`fixed bottom-0 w-full max-w-md border-t px-6 py-4 pb-8 flex justify-between items-center z-40 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-100'}`}>{['home', 'stats', 'wallet', 'suggestions', 'profile'].map((tab) => { const isActive = activeTab === tab; const Icons = { home: Home, stats: PieChart, wallet: Wallet, suggestions: Sparkles, profile: Settings }; const Icon = Icons[tab]; return (<button key={tab} onClick={() => setActiveTab(tab)} className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? 'scale-110' : 'text-gray-400 hover:text-gray-500 scale-100'}`} style={{ color: isActive ? theme.royalBlue : isDarkMode ? '#6b7280' : undefined }}><Icon size={24} strokeWidth={isActive ? 2.5 : 2} />{isActive && (<span className="w-1 h-1 rounded-full bg-current animate-fade-in mt-1"></span>)}</button>); })}</div>
+              {/* FIXED: Changed 'fixed' to 'absolute' to contain the dock within the mobile frame */}
+              <div className={`absolute bottom-0 w-full border-t px-6 py-4 pb-8 flex justify-between items-center z-40 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-100'}`}>{['home', 'stats', 'wallet', 'suggestions', 'profile'].map((tab) => { const isActive = activeTab === tab; const Icons = { home: Home, stats: PieChart, wallet: Wallet, suggestions: Sparkles, profile: Settings }; const Icon = Icons[tab]; return (<button key={tab} onClick={() => setActiveTab(tab)} className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? 'scale-110' : 'text-gray-400 hover:text-gray-500 scale-100'}`} style={{ color: isActive ? theme.royalBlue : isDarkMode ? '#6b7280' : undefined }}><Icon size={24} strokeWidth={isActive ? 2.5 : 2} />{isActive && (<span className="w-1 h-1 rounded-full bg-current animate-fade-in mt-1"></span>)}</button>); })}</div>
               
               <NotificationSidebar 
                   notifications={notifications} 
