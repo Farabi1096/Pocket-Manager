@@ -17,8 +17,8 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            overscroll-behavior-y: none; /* Prevents rubber-band scrolling on iOS */
-            -webkit-tap-highlight-color: transparent; /* Removes tap highlight color */
+            overscroll-behavior-y: none; 
+            -webkit-tap-highlight-color: transparent;
         }
         
         /* Hide scrollbar for Chrome, Safari and Opera */
@@ -47,9 +47,10 @@
         .animate-bounce-in { animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
     </style>
 </head>
-<body class="bg-gray-100 h-[100dvh] w-full flex justify-center items-center overflow-hidden">
+<!-- Removed centered flex layout to allow full-screen app feel -->
+<body class="bg-gray-100 h-[100dvh] w-full overflow-hidden fixed inset-0">
 
-    <div id="root" class="w-full h-full max-w-md mx-auto relative shadow-2xl bg-gray-50 flex flex-col"></div>
+    <div id="root" class="w-full h-full"></div>
 
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useMemo, useCallback } from 'https://esm.sh/react@18.2.0';
@@ -315,18 +316,17 @@
             <>
               {/* Backdrop */}
               <div 
-                className={`fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
+                className={`fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} 
                 onClick={onClose}
               />
               
               {/* Sidebar sliding from RIGHT - Glass/Blur Effect - Fixed Width */}
-              {/* Optimized transition duration and bezier curve for smoothness */}
               <div 
-                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl will-change-transform pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}
+                className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl`}
               >
                 <div className="flex flex-col h-full">
-                  {/* Header with Safe Area Handling */}
-                  <div className={`flex justify-between items-center px-6 py-6 border-b shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+                  {/* Header with Mobile Safe Area Padding (pt-16) */}
+                  <div className={`flex justify-between items-end px-6 pb-6 pt-16 border-b shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                     <div className="flex items-center gap-3">
                       <h3 className={`font-bold text-2xl tracking-tight ${isDarkMode ? 'text-white' : 'text-[#052065]'}`}>Notifications</h3>
                       {notifications.length > 0 && (
@@ -402,8 +402,8 @@
 
           return (
             <div 
-                // Optimized Safe Area Padding: Works for Notch (iOS) and Dynamic Bars (Android)
-                className={`sticky top-0 z-50 flex justify-between items-center px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-4 animate-fade-in transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
+                // Increased top padding (pt-16) for mobile safe area, normalized (md:py-6) for desktop
+                className={`sticky top-0 z-50 flex justify-between items-center px-6 pt-16 pb-4 md:py-6 animate-fade-in transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
                 style={{ color: isDarkMode ? 'white' : theme.navy }}
             >
                 <div className="flex-1 mr-4">
@@ -766,8 +766,8 @@
                     <div 
                         className={`absolute -top-8 transition-all duration-500 transform 
                         ${bar.value > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
-                        text-[10px] font-bold px-2 py-1 whitespace-nowrap z-10
-                        ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}
+                        text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap z-10
+                        ${isDarkMode ? 'bg-white/5 text-gray-200' : 'bg-gray-50 text-gray-600'}`}
                     >
                       ${bar.value >= 1000 ? (bar.value/1000).toFixed(1) + 'k' : Math.round(bar.value)}
                     </div>
@@ -785,8 +785,8 @@
                         </div>
                     </div>
                     
-                    {/* Day Label */}
-                    <span className={`mt-2 text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`}>
+                    {/* Day Label - Fixed at bottom, on top of bar */}
+                    <span className={`absolute bottom-2 z-10 text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-white mix-blend-overlay' : 'text-gray-600 mix-blend-multiply'}`}>
                         {bar.day.charAt(0)}
                     </span>
                   </div>
@@ -1502,6 +1502,53 @@
             } catch { return initialSubsData; }
           });
 
+          // --- AUTO-UPDATE SUBSCRIPTION DATES ---
+          // This effect runs on mount to check if any subscription dates have passed and updates them
+          useEffect(() => {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            setSubs(currentSubs => {
+                let updated = false;
+                const newSubs = currentSubs.map(sub => {
+                    if (!sub.nextDate) return sub;
+                    
+                    // Parse the stored date string (e.g. "Jan 25")
+                    // Note: parseDate uses current year. If "Jan 25" is stored and today is "Jan 26", it detects it as past.
+                    const subDate = parseDate(sub.nextDate);
+                    
+                    // If subDate is valid and strictly in the past
+                    if (!isNaN(subDate) && subDate < today) {
+                         updated = true;
+                         let nextDate = new Date(subDate);
+                         
+                         // Increment until the date is in the future
+                         // This handles cases where the app wasn't opened for multiple months
+                         while (nextDate < today) {
+                             if (sub.cycle === 'Monthly') {
+                                 nextDate.setMonth(nextDate.getMonth() + 1);
+                             } else if (sub.cycle === 'Weekly') {
+                                 nextDate.setDate(nextDate.getDate() + 7);
+                             } else if (sub.cycle === 'Yearly') {
+                                 nextDate.setFullYear(nextDate.getFullYear() + 1);
+                             } else {
+                                 // Default fallback to monthly
+                                 nextDate.setMonth(nextDate.getMonth() + 1);
+                             }
+                         }
+                         
+                         return {
+                             ...sub,
+                             nextDate: nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                         };
+                    }
+                    return sub;
+                });
+                
+                return updated ? newSubs : currentSubs;
+            });
+          }, []); // Empty dependency array ensures this runs once when the app loads
+
           const [wallets, setWallets] = useState(getInitialWallets);
 
           const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
@@ -2019,9 +2066,11 @@
                   </div>
                 );
                 case 'wallet': return (
-                    <div key="wallet" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4">
+                    // Restored w-full and px-6 on wrapper, removed mx-6 from children
+                    <div key="wallet" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                         <div className={`p-6 rounded-[2rem] shadow-sm mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                            <span className="text-xs font-bold uppercase tracking-widest opacity-60 block mb-1">Total Assets</span>
+                            {/* Updated: Added conditional text color for Dark Mode */}
+                            <span className={`text-xs font-bold uppercase tracking-widest opacity-60 block mb-1 ${isDarkMode ? 'text-white' : 'text-gray-500'}`}>Total Assets</span>
                             <h3 className={`text-3xl font-bold ${textColor}`} style={textStyle}>${totalAssets.toLocaleString()}</h3>
                         </div>
 
@@ -2046,7 +2095,8 @@
                     </div>
                 );
                 case 'loans': return (
-                    <div key="loans" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4">
+                    // Updated to match AI Insights layout: px-6 on wrapper, w-full
+                    <div key="loans" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                       <div className="flex gap-4 mb-8">
                         <div className={`flex-1 p-5 rounded-[1.5rem] shadow-sm ${isDarkMode ? 'bg-red-500/10' : 'bg-red-50'}`}>
                           <div className="flex items-center gap-2 mb-2 opacity-80"><ArrowDownLeft size={16} className="text-red-500" /><span className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Borrowed</span></div>
@@ -2071,7 +2121,8 @@
                     </div>
                 );
                 case 'goals': return (
-                    <div key="goals" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4">
+                    // Updated to match AI Insights layout: px-6 on wrapper, w-full
+                    <div key="goals" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                       <div className={`p-6 rounded-[2rem] shadow-lg mb-8 relative overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-[#052065]'}`}><div className="relative z-10 flex justify-between items-end"><div className="text-white"><span className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1 block">Total Saved</span><h3 className="text-3xl font-bold">${totalGoalSaved.toLocaleString()}</h3><p className="text-xs opacity-60 mt-1">Target: ${totalGoalTarget.toLocaleString()}</p></div><div className="w-16 h-16 rounded-full border-4 border-teal-400 flex items-center justify-center text-white font-bold">{totalGoalTarget > 0 ? Math.round((totalGoalSaved / totalGoalTarget) * 100) : 0}%</div></div><div className="absolute -right-6 -bottom-10 opacity-10"><Trophy size={120} color="white" /></div></div>
                       <div><div className="flex justify-between items-center mb-4"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Your Targets</h3></div><div className="flex flex-col gap-1">{filteredGoals.length > 0 ? (filteredGoals.map((goal, idx) => (<GoalItem key={goal.id} item={goal} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingGoal(item); setIsAddGoalModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No goals set yet.</p>)}</div></div>
                       <button 
@@ -2084,7 +2135,8 @@
                     </div>
                 );
                 case 'subs': return (
-                    <div key="subs" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4">
+                    // Updated to match AI Insights layout: px-6 on wrapper, w-full
+                    <div key="subs" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                       <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300`}>
                         <div className="flex justify-between items-center mb-6"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Active Subs</h3><span className="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">{filteredSubs.length}</span></div><div className="flex flex-col gap-1">{filteredSubs.length > 0 ? (filteredSubs.map((sub, idx) => (<SubItem key={sub.id} item={sub} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingSub(item); setIsSubModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No subscriptions added.</p>)}</div>
                       </div>
@@ -2099,7 +2151,7 @@
                 );
                 case 'stats': return (
                     // Added responsive pb-40 for mobile, md:pb-8 for desktop
-                    <div key="stats" className="pb-40 md:pb-8 animate-page-enter mt-4"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
+                    <div key="stats" className="pb-40 md:pb-8 animate-page-enter mt-4 w-full"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
                           <div className="grid grid-cols-1 gap-y-2 mt-6"> 
                             {currentStatsData.map((d, i) => (
                               // Updated background color logic: subtle gray for light mode, transparent white for dark mode
@@ -2155,7 +2207,8 @@
                 );
               case 'suggestions':
                 return (
-                  <div key="suggestions" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4">
+                  // Removed w-full
+                  <div key="suggestions" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
                     <div className="flex items-center justify-end mt-4 mb-6">
                         <button onClick={fetchGeminiAdvice} disabled={loadingGemini} className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50">{loadingGemini ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}{loadingGemini ? 'Analyzing...' : 'Ask AI'}</button>
                     </div>
@@ -2177,7 +2230,7 @@
                 );
               case 'profile':
                 return (
-                  <div key="profile" className="px-6 pb-40 md:pb-8 animate-page-enter mt-6">
+                  <div key="profile" className="px-6 pb-40 md:pb-8 animate-page-enter mt-6 w-full">
                     <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-slide-up-fade transition-colors duration-300`}>
                       <div className={`flex items-center justify-between mb-8 pb-8 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                         <div className="flex items-center gap-4"><div className={`p-3 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>{isDarkMode ? <Moon size={20} className="text-gray-300" /> : <Sun size={20} className="text-indigo-600" />}</div><div><h3 className={`font-bold ${textColor}`} style={textStyle}>Dark Mode</h3><p className="text-xs text-gray-400 mt-1">Adjust screen brightness</p></div></div>
