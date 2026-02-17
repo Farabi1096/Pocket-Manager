@@ -642,19 +642,29 @@
           );
         });
 
-        // ... (LoanItem, SubItem, GoalItem, Charts - No changes needed logic wise, just layout)
-        const LoanItem = React.memo(({ item, isDarkMode, onClick }) => (
-          <div onClick={() => onClick && onClick(item)} className={`flex items-center justify-between py-4 px-4 mb-2 rounded-2xl transition-all duration-300 active:scale-[0.98] animate-stagger-in opacity-0 cursor-pointer ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'}`} style={{ animationFillMode: 'forwards' }}>
-            <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${item.type === 'given' ? (isDarkMode ? 'bg-teal-900/30' : 'bg-teal-50') : (isDarkMode ? 'bg-red-900/30' : 'bg-red-50')}`}><User size={20} color={item.type === 'given' ? theme.teal : theme.hotPink} /></div>
-              <div>
-                <h4 className={`font-bold text-sm transition-colors ${isDarkMode ? 'text-white' : ''}`} style={{ color: isDarkMode ? undefined : theme.navy }}>{item.person}</h4>
-                <div className="flex items-center gap-2 mt-1"><span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${item.type === 'given' ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'}`}>{item.type === 'given' ? 'Given' : 'Taken'}</span><span className="text-[10px] text-gray-400 flex items-center gap-1"><Calendar size={10} /> Due: {item.dueDate}</span></div>
+        const LoanItem = React.memo(({ item, isDarkMode, onClick, paidAmount = 0 }) => {
+            const remaining = item.amount - paidAmount;
+            const isFullyPaid = remaining <= 0;
+
+            return (
+              <div onClick={() => onClick && onClick(item)} className={`flex items-center justify-between py-4 px-4 mb-2 rounded-2xl transition-all duration-300 active:scale-[0.98] animate-stagger-in opacity-0 cursor-pointer ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'}`} style={{ animationFillMode: 'forwards' }}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${item.type === 'given' ? (isDarkMode ? 'bg-teal-900/30' : 'bg-teal-50') : (isDarkMode ? 'bg-red-900/30' : 'bg-red-50')}`}><User size={20} color={item.type === 'given' ? theme.teal : theme.hotPink} /></div>
+                  <div>
+                    <h4 className={`font-bold text-sm transition-colors ${isFullyPaid ? 'line-through opacity-60' : ''} ${isDarkMode ? 'text-white' : ''}`} style={{ color: isDarkMode ? undefined : theme.navy }}>{item.person}</h4>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${item.type === 'given' ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'}`}>{item.type === 'given' ? 'Given' : 'Taken'}</span>
+                        <span className="text-[10px] text-gray-400 flex items-center gap-1"><Calendar size={10} /> Due: {item.dueDate}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                    <div className={`font-bold text-sm ${item.type === 'given' ? 'text-green-500' : 'text-red-500'}`}>{item.type === 'given' ? '+' : '-'}৳{Math.max(0, remaining).toLocaleString()}</div>
+                    {paidAmount > 0 && <div className="text-[10px] text-gray-400 font-medium">Paid: ৳{paidAmount.toLocaleString()}</div>}
+                </div>
               </div>
-            </div>
-            <div className={`font-bold text-sm ${item.type === 'given' ? 'text-green-500' : 'text-red-500'}`}>{item.type === 'given' ? '+' : '-'}৳{Math.abs(item.amount).toLocaleString()}</div>
-          </div>
-        ));
+            );
+        });
 
         const SubItem = React.memo(({ item, isDarkMode, onClick }) => {
           const IconComponent = getIcon(item.icon);
@@ -796,7 +806,7 @@
 
         // --- Modals ---
 
-        const TransactionModal = ({ isOpen, onClose, onSave, onDelete, initialData, isDarkMode, showToast, wallets, onManageWallets, categories, onAddCategory }) => {
+        const TransactionModal = ({ isOpen, onClose, onSave, onDelete, initialData, isDarkMode, showToast, wallets, onManageWallets, categories, onAddCategory, loans }) => {
           const [amount, setAmount] = useState('');
           const [title, setTitle] = useState('');
           const [type, setType] = useState('expense'); // 'expense' | 'income' | 'transfer'
@@ -804,13 +814,23 @@
           const [customCategory, setCustomCategory] = useState(''); // New state for custom category
           const [account, setAccount] = useState('Cash'); // Holds wallet ID
           const [toAccount, setToAccount] = useState('Cash'); // For transfer, holds wallet ID
+          const [linkedLoanId, setLinkedLoanId] = useState(''); // New state for linking loan
           const [note, setNote] = useState('');
           const [date, setDate] = useState(formatDateToISO(new Date()));
           const [isDigital, setIsDigital] = useState(false); // Helper for UI toggle
           const [isToDigital, setIsToDigital] = useState(false);
 
           // Use prop categories instead of hardcoded list
-          const displayCategories = categories || ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Income', 'Other'];
+          const displayCategories = categories || ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Loan Repayment', 'Income', 'Other'];
+
+          // Filter loans based on transaction type
+          // If Expense -> Paying back a 'taken' loan
+          // If Income -> Receiving back a 'given' loan
+          const availableLoans = useMemo(() => {
+              if (type === 'expense') return loans.filter(l => l.type === 'taken');
+              if (type === 'income') return loans.filter(l => l.type === 'given');
+              return [];
+          }, [loans, type]);
 
           useEffect(() => {
             if (initialData) {
@@ -826,6 +846,8 @@
                   setCategory('Other');
                   setCustomCategory(initialData.category);
               }
+              
+              setLinkedLoanId(initialData.linkedLoanId || ''); // Load linked loan
 
               setAccount(initialData.account); 
               setNote(initialData.note || '');
@@ -839,6 +861,7 @@
               setAmount(''); setTitle(''); setType('expense'); setCategory('Food'); setCustomCategory('');
               setAccount('Cash'); setIsDigital(false);
               setToAccount('Cash'); setIsToDigital(false);
+              setLinkedLoanId('');
               setNote('');
               setDate(formatDateToISO(new Date())); 
             }
@@ -858,10 +881,7 @@
             if (type === 'expense') {
                 if (category === 'Other') {
                     finalCategory = customCategory.trim() || 'Other';
-                    // Add to category list if it's a new custom category
-                    if (finalCategory !== 'Other') {
-                        onAddCategory(finalCategory);
-                    }
+                    if (finalCategory !== 'Other') onAddCategory(finalCategory);
                 }
             } else if (type === 'transfer') {
                 finalCategory = 'Transfer';
@@ -877,6 +897,7 @@
               category: finalCategory, 
               account, 
               toAccount: type === 'transfer' ? toAccount : null,
+              linkedLoanId: finalCategory === 'Loan Repayment' ? linkedLoanId : null, // Save link
               note,
               date: date 
             });
@@ -958,6 +979,25 @@
                                     className={`w-full px-4 py-3 rounded-xl border bg-transparent outline-none font-medium text-sm transition-all ${isDarkMode ? 'border-gray-700 focus:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}
                                     autoFocus
                                 />
+                            </div>
+                        )}
+                        {/* LOAN SELECTION DROPDOWN */}
+                        {category === 'Loan Repayment' && (
+                            <div className="mt-3 animate-fade-in">
+                                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Select Loan to Repay</p>
+                                <div className={`flex items-center px-4 py-3 rounded-xl border transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}>
+                                    <HandCoins size={18} className="mr-3 opacity-50" />
+                                    <select 
+                                        value={linkedLoanId} 
+                                        onChange={(e) => setLinkedLoanId(e.target.value)} 
+                                        className="bg-transparent w-full font-medium outline-none text-sm"
+                                    >
+                                        <option value="">-- Choose Loan --</option>
+                                        {availableLoans.map(l => (
+                                            <option key={l.id} value={l.id}>{l.person} - ৳{l.amount}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -1754,14 +1794,28 @@
 
             return { totalBalance: allTimeBalance, ...cycleTotals }; 
           }, [transactions, dateFilteredTransactions]);
+          
+          // Calculate repayments for each loan
+          const loanRepaymentsMap = useMemo(() => {
+              const map = {};
+              transactions.forEach(t => {
+                  if (t.category === 'Loan Repayment' && t.linkedLoanId) {
+                      map[t.linkedLoanId] = (map[t.linkedLoanId] || 0) + Math.abs(t.amount);
+                  }
+              });
+              return map;
+          }, [transactions]);
 
           const { totalGiven, totalTaken } = useMemo(() => {
             return loans.reduce((acc, l) => {
-              if (l.type === 'given') acc.totalGiven += l.amount;
-              else acc.totalTaken += l.amount;
+              // Deduct paid amount from total
+              const remaining = Math.max(0, l.amount - (loanRepaymentsMap[l.id] || 0));
+              
+              if (l.type === 'given') acc.totalGiven += remaining;
+              else acc.totalTaken += remaining;
               return acc;
             }, { totalGiven: 0, totalTaken: 0 });
-          }, [loans]);
+          }, [loans, loanRepaymentsMap]);
 
           const loanRepaidTotal = useMemo(() => {
             return dateFilteredTransactions
@@ -2194,16 +2248,44 @@
                           <MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} />
                       </div>
                       
-                      <div className="mb-6 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl flex items-center justify-between border border-indigo-100 dark:border-indigo-800 animate-scale-in">
-                          <div className="flex items-center gap-3">
-                              <div className="p-2 bg-indigo-100 dark:bg-indigo-800 text-indigo-600 dark:text-indigo-300 rounded-xl">
-                                  <Check size={20} />
+                      {/* Repaid Section (Merged to Top & Expandable) */}
+                      <div 
+                          onClick={() => setIsRepaidExpanded(!isRepaidExpanded)}
+                          className={`mb-6 p-4 rounded-[1.5rem] border transition-all cursor-pointer animate-scale-in relative overflow-hidden ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100 shadow-md'}`}
+                      >
+                          <div className="flex items-center justify-between relative z-10">
+                              <div className="flex items-center gap-4">
+                                  <div className={`p-3 rounded-2xl ${isDarkMode ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-50 text-indigo-600'}`}>
+                                      <Check size={24} />
+                                  </div>
+                                  <div>
+                                      <p className={`text-xs font-bold uppercase tracking-widest opacity-60 mb-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Loan Repayments (This Month)</p>
+                                      <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-indigo-600'}`}>৳{loanRepaidTotal.toLocaleString()}</h3>
+                                  </div>
                               </div>
-                              <div>
-                                  <p className="text-xs font-bold uppercase tracking-widest opacity-60 text-indigo-900 dark:text-indigo-300">Loan Repayments (This Month)</p>
-                                  <h3 className="text-xl font-bold text-indigo-700 dark:text-white">৳{loanRepaidTotal.toLocaleString()}</h3>
+                              <div className={`p-2 rounded-full transition-transform duration-300 ${isRepaidExpanded ? 'rotate-180 bg-gray-700/50' : ''} ${isDarkMode ? 'text-gray-400' : 'text-gray-400 hover:bg-gray-50'}`}>
+                                <ChevronDown size={20} />
                               </div>
                           </div>
+
+                          {/* Dropdown Content */}
+                          {isRepaidExpanded && (
+                              <div className={`mt-4 pt-4 border-t border-dashed space-y-2 animate-fade-in ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} onClick={e => e.stopPropagation()}>
+                                  {repaidTransactionsList.length > 0 ? (
+                                      repaidTransactionsList.map((t) => (
+                                          <div key={t.id} className={`flex justify-between items-center text-sm px-3 py-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'}`}>
+                                              <div className="flex flex-col">
+                                                  <span className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{t.title}</span>
+                                                  <span className="text-[10px] text-gray-500 font-medium">{formatDisplayDate(t.date)}</span>
+                                              </div>
+                                              <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-indigo-600'}`}>৳{Math.abs(t.amount).toLocaleString()}</span>
+                                          </div>
+                                      ))
+                                  ) : (
+                                      <p className="text-center text-xs text-gray-400 italic py-2">No repayments recorded this month</p>
+                                  )}
+                              </div>
+                          )}
                       </div>
 
                       <div className="flex gap-4 mb-6">
@@ -2219,46 +2301,16 @@
 
                       <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300 mb-6`}>
                         <div className="flex justify-between items-center mb-6"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Active Loans</h3><span className="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">{filteredLoans.length}</span></div>
-                        <div className="flex flex-col gap-1">{filteredLoans.length > 0 ? (filteredLoans.map((loan, idx) => (<LoanItem key={loan.id} item={loan} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingLoan(item); setIsLoanModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No active loans found.</p>)}</div>
-                      </div>
-
-                      {/* Repaid Section (Moved & Expandable) */}
-                      <div 
-                          onClick={() => setIsRepaidExpanded(!isRepaidExpanded)}
-                          className={`mb-6 p-4 rounded-2xl border transition-all cursor-pointer animate-slide-up-fade ${isDarkMode ? 'bg-indigo-900/20 border-indigo-800' : 'bg-indigo-50 border-indigo-100'}`}
-                          style={{ animationDelay: '0.1s' }}
-                      >
-                          <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                  <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-indigo-800 text-indigo-300' : 'bg-indigo-100 text-indigo-600'}`}>
-                                      <Check size={20} />
-                                  </div>
-                                  <div>
-                                      <p className={`text-xs font-bold uppercase tracking-widest opacity-60 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-900'}`}>Loan Repayments (This Month)</p>
-                                      <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-indigo-700'}`}>৳{loanRepaidTotal.toLocaleString()}</h3>
-                                  </div>
-                              </div>
-                              <ChevronDown size={20} className={`transform transition-transform duration-300 ${isRepaidExpanded ? 'rotate-180' : ''} ${isDarkMode ? 'text-indigo-300' : 'text-indigo-400'}`} />
-                          </div>
-
-                          {/* Dropdown Content */}
-                          {isRepaidExpanded && (
-                              <div className="mt-4 pt-3 border-t border-dashed border-indigo-200 dark:border-indigo-700/50 space-y-2 animate-fade-in" onClick={e => e.stopPropagation()}>
-                                  {repaidTransactionsList.length > 0 ? (
-                                      repaidTransactionsList.map((t) => (
-                                          <div key={t.id} className="flex justify-between items-center text-xs px-2 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                                              <div className="flex flex-col">
-                                                  <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.title}</span>
-                                                  <span className="text-[10px] text-gray-500">{formatDisplayDate(t.date)}</span>
-                                              </div>
-                                              <span className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>৳{Math.abs(t.amount).toLocaleString()}</span>
-                                          </div>
-                                      ))
-                                  ) : (
-                                      <p className="text-center text-[10px] text-gray-400 italic py-1">No repayments recorded this month</p>
-                                  )}
-                              </div>
-                          )}
+                        <div className="flex flex-col gap-1">{filteredLoans.length > 0 ? (filteredLoans.map((loan, idx) => (
+                            <LoanItem 
+                                key={loan.id} 
+                                item={loan} 
+                                index={idx} 
+                                isDarkMode={isDarkMode} 
+                                paidAmount={loanRepaymentsMap[loan.id] || 0}
+                                onClick={(item) => { setEditingLoan(item); setIsLoanModalOpen(true); }} 
+                            />
+                        ))) : (<p className="text-center text-gray-400 py-8 text-sm">No active loans found.</p>)}</div>
                       </div>
 
                       <button 
@@ -2362,7 +2414,7 @@
                 );
               case 'suggestions':
                 return (
-                  // Removed w-full
+                  // Removed w-full, removed extra spacer div
                   <div key="suggestions" className="px-6 pb-32 animate-page-enter w-full pt-28">
                     <div className="flex items-center justify-end mt-4 mb-6">
                         <button onClick={fetchGeminiAdvice} disabled={loadingGemini} className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50">{loadingGemini ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}{loadingGemini ? 'Analyzing...' : 'Ask AI'}</button>
@@ -2478,7 +2530,6 @@
                         </button>
                       </div>
                     </div>
-                    <div className="h-32"></div>
                   </div>
                 );
               default:
@@ -2524,6 +2575,7 @@
                 onManageWallets={handleManageWallets}
                 categories={categories}
                 onAddCategory={handleAddCategory}
+                loans={loans}
               />
               <LoanModal isOpen={isLoanModalOpen} onClose={() => setIsLoanModalOpen(false)} onSave={handleSaveLoan} onDelete={handleDeleteLoan} initialData={editingLoan} isDarkMode={isDarkMode} showToast={showToast} />
               <SubscriptionModal isOpen={isSubModalOpen} onClose={() => setIsSubModalOpen(false)} onSave={handleSaveSub} onDelete={handleDeleteSub} initialData={editingSub} isDarkMode={isDarkMode} showToast={showToast} />
