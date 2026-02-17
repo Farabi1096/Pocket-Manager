@@ -45,10 +45,8 @@
         .animate-bounce-in { animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
     </style>
 </head>
-<!-- Restored Flex Center and Background for "Mobile Version" feel on Desktop -->
 <body class="bg-gray-100 h-[100dvh] w-full flex justify-center items-center overflow-hidden fixed inset-0">
 
-    <!-- Added max-w-md and shadow to create the phone frame -->
     <div id="root" class="w-full h-full max-w-md mx-auto relative shadow-2xl bg-gray-50 flex flex-col overflow-hidden"></div>
 
     <script type="text/babel" data-type="module">
@@ -103,10 +101,9 @@
 
         // --- Icon Mapping ---
         const ICON_MAP = {
-          ShoppingBag, Wallet, Car, Gamepad2, Coffee, Zap, Smartphone, Plane, Target, Repeat, Briefcase, Gift, Home, User, ArrowRightLeft, Heart
+          ShoppingBag, Wallet, Car, Gamepad2, Coffee, Zap, Smartphone, Plane, Target, Repeat, Briefcase, Gift, Home, User, ArrowRightLeft, Heart, Check
         };
 
-        // Helper to map category names to icon strings
         const getCategoryIcon = (category) => {
           const map = {
             'Food': 'Coffee',
@@ -115,6 +112,7 @@
             'Bills': 'Zap',
             'Entertainment': 'Gamepad2',
             'Health': 'Heart', 
+            'Loan Repayment': 'Check',
             'Income': 'Wallet',
             'Transfer': 'ArrowRightLeft',
             'Other': 'MoreHorizontal'
@@ -319,12 +317,11 @@
                 onClick={onClose}
               />
               
-              {/* Sidebar sliding from RIGHT - Glass/Blur Effect - Fixed Width */}
+              {/* Sidebar sliding from RIGHT */}
               <div 
                 className={`fixed inset-y-0 right-0 z-[70] w-80 shadow-2xl transform transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isDarkMode ? 'bg-gray-900/90 border-l border-gray-800' : 'bg-white/90 border-l border-gray-100'} backdrop-blur-xl will-change-transform pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}
               >
                 <div className="flex flex-col h-full">
-                  {/* Header with Mobile Safe Area Padding (pt-16) */}
                   <div className={`flex justify-between items-end px-6 pb-6 pt-16 border-b shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                     <div className="flex items-center gap-3">
                       <h3 className={`font-bold text-2xl tracking-tight ${isDarkMode ? 'text-white' : 'text-[#052065]'}`}>Notifications</h3>
@@ -339,7 +336,6 @@
                     </button>
                   </div>
                   
-                  {/* Scrollable List */}
                   <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
                     {notifications.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-60">
@@ -363,7 +359,6 @@
                     )}
                   </div>
                   
-                  {/* Footer Action */}
                   <div className={`p-6 border-t shrink-0 ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                     <button onClick={onClose} className={`w-full py-4 rounded-2xl text-sm font-bold transition-all active:scale-[0.98] shadow-lg ${isDarkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-[#052065] text-white hover:opacity-90'}`}>
                       Mark all as read
@@ -401,7 +396,6 @@
 
           return (
             <div 
-                // Absolute positioning relative to the centered container
                 className={`absolute top-0 w-full z-50 flex justify-between items-center px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-4 transition-all duration-300 backdrop-blur-xl ${isDarkMode ? 'bg-gray-900/85 supports-[backdrop-filter]:bg-gray-900/60' : 'bg-gray-50/85 supports-[backdrop-filter]:bg-gray-50/60'}`} 
                 style={{ color: isDarkMode ? 'white' : theme.navy }}
             >
@@ -513,19 +507,19 @@
                style={{ background: `linear-gradient(135deg, ${theme.navy} 0%, ${theme.royalBlue} 100%)` }}>
               <div className="relative z-10">
                 <p className="opacity-80 text-sm font-medium mb-1 tracking-wide">Total Balance</p>
-                <h2 className="text-4xl font-bold mb-8 tracking-tight">${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
+                <h2 className="text-4xl font-bold mb-8 tracking-tight">৳{totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-1.5 mb-1 opacity-80"><div className="p-1 rounded-full bg-white/20"><ArrowDownLeft size={10} className="text-white" /></div><span className="text-[10px] font-bold uppercase tracking-wider">Income</span></div>
-                    <p className="font-bold text-lg tracking-tight truncate">${income.toLocaleString()}</p>
+                    <p className="font-bold text-lg tracking-tight truncate">৳{income.toLocaleString()}</p>
                   </div>
                   <div className="flex-1 border-l border-white/10 pl-4">
                     <div className="flex items-center gap-1.5 mb-1 opacity-80"><div className="p-1 rounded-full bg-white/20"><ArrowUpRight size={10} className="text-white" /></div><span className="text-[10px] font-bold uppercase tracking-wider">Expense</span></div>
-                    <p className="font-bold text-lg tracking-tight truncate">${Math.abs(expense).toLocaleString()}</p>
+                    <p className="font-bold text-lg tracking-tight truncate">৳{Math.abs(expense).toLocaleString()}</p>
                   </div>
                   <div className="flex-1 border-l border-white/10 pl-4">
-                    <div className="flex items-center gap-1.5 mb-1 opacity-80"><div className="p-1 rounded-full bg-white/20"><PiggyBank size={10} className="text-white" /></div><span className="text-[10px] font-bold uppercase tracking-wider">Savings</span></div>
-                    <p className="font-bold text-lg tracking-tight truncate">${savings.toLocaleString()}</p>
+                    <div className="flex items-center gap-1.5 mb-1 opacity-80"><div className="p-1 rounded-full bg-white/20"><PiggyBank size={10} className="text-white" /></div><span className="text-[10px] font-bold uppercase tracking-wider">Balance</span></div>
+                    <p className="font-bold text-lg tracking-tight truncate">৳{savings.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -584,7 +578,7 @@
                       </p>
                       {wallet.isDefault && <span className="bg-white/25 px-1.5 py-0.5 rounded text-[8px] font-bold border border-white/20">Default</span>}
                   </div>
-                  <h3 className="text-2xl font-bold tracking-tight text-shadow-md">${wallet.balance?.toLocaleString() || '0'}</h3>
+                  <h3 className="text-2xl font-bold tracking-tight text-shadow-md">৳{wallet.balance?.toLocaleString() || '0'}</h3>
                 </div>
               </div>
               
@@ -642,7 +636,7 @@
               </div>
               <div className={`font-bold text-sm ${item.type === 'transfer' ? 'text-blue-500' : (item.amount > 0 ? 'text-green-500' : (isDarkMode ? 'text-white' : 'text-gray-800'))}`}>
                 {item.type === 'transfer' ? '' : (item.amount > 0 ? '+' : '')}
-                {Math.abs(item.amount).toFixed(2)}
+                ৳{Math.abs(item.amount).toFixed(2)}
               </div>
             </div>
           );
@@ -658,7 +652,7 @@
                 <div className="flex items-center gap-2 mt-1"><span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${item.type === 'given' ? 'bg-teal-100 text-teal-700' : 'bg-red-100 text-red-700'}`}>{item.type === 'given' ? 'Given' : 'Taken'}</span><span className="text-[10px] text-gray-400 flex items-center gap-1"><Calendar size={10} /> Due: {item.dueDate}</span></div>
               </div>
             </div>
-            <div className={`font-bold text-sm ${item.type === 'given' ? 'text-green-500' : 'text-red-500'}`}>{item.type === 'given' ? '+' : '-'}${Math.abs(item.amount).toLocaleString()}</div>
+            <div className={`font-bold text-sm ${item.type === 'given' ? 'text-green-500' : 'text-red-500'}`}>{item.type === 'given' ? '+' : '-'}৳{Math.abs(item.amount).toLocaleString()}</div>
           </div>
         ));
 
@@ -673,7 +667,7 @@
                   <div className="flex items-center gap-2 mt-1"><span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500`}>{item.cycle}</span><span className="text-[10px] text-gray-400">Next: {item.nextDate}</span></div>
                 </div>
               </div>
-              <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>${item.cost}</div>
+              <div className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>৳{item.cost}</div>
             </div>
           );
         });
@@ -686,10 +680,10 @@
             <div onClick={() => onClick && onClick(item)} className={`p-5 mb-3 rounded-[1.5rem] transition-all duration-300 active:scale-[0.98] animate-stagger-in opacity-0 cursor-pointer ${isDarkMode ? 'bg-gray-800' : 'bg-white shadow-sm hover:shadow-md'}`} style={{ animationFillMode: 'forwards' }}>
               <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3"><div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}><IconComponent size={20} color={item.color} /></div><div><h4 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.title}</h4><p className="text-[10px] text-gray-400 font-medium mt-0.5">By {item.deadline}</p></div></div>
-                <div className="text-right"><span className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>${item.saved.toLocaleString()}</span><p className="text-[10px] text-gray-400">of ${item.target.toLocaleString()}</p></div>
+                <div className="text-right"><span className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>৳{item.saved.toLocaleString()}</span><p className="text-[10px] text-gray-400">of ৳{item.target.toLocaleString()}</p></div>
               </div>
               <div className={`h-2 w-full rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${percentage}%`, backgroundColor: item.color }}></div></div>
-              <div className="flex justify-between mt-2"><span className="text-[10px] font-bold text-gray-400">{percentage}%</span><span className="text-[10px] font-bold text-gray-400">Left: ${(item.target - item.saved).toLocaleString()}</span></div>
+              <div className="flex justify-between mt-2"><span className="text-[10px] font-bold text-gray-400">{percentage}%</span><span className="text-[10px] font-bold text-gray-400">Left: ৳{(item.target - item.saved).toLocaleString()}</span></div>
             </div>
           );
         });
@@ -732,7 +726,7 @@
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Total</span>
-                <span className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : ''}`} style={{ color: isDarkMode ? undefined : theme.navy }}>${total.toLocaleString()}</span>
+                <span className={`text-xl font-bold transition-colors ${isDarkMode ? 'text-white' : ''}`} style={{ color: isDarkMode ? undefined : theme.navy }}>৳{total.toLocaleString()}</span>
               </div>
             </div>
           );
@@ -785,7 +779,7 @@
                         className={`absolute top-2 z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap 
                         ${isDarkMode ? 'text-white bg-black/20' : 'text-gray-600 bg-white/60'}`}
                     >
-                      ${bar.value >= 1000 ? (bar.value/1000).toFixed(1) + 'k' : Math.round(bar.value)}
+                      ৳{bar.value >= 1000 ? (bar.value/1000).toFixed(1) + 'k' : Math.round(bar.value)}
                     </div>
                     
                     {/* Day Label - Fixed at bottom, on top of bar */}
@@ -802,11 +796,12 @@
 
         // --- Modals ---
 
-        const TransactionModal = ({ isOpen, onClose, onSave, onDelete, initialData, isDarkMode, showToast, wallets, onManageWallets }) => {
+        const TransactionModal = ({ isOpen, onClose, onSave, onDelete, initialData, isDarkMode, showToast, wallets, onManageWallets, categories, onAddCategory }) => {
           const [amount, setAmount] = useState('');
           const [title, setTitle] = useState('');
           const [type, setType] = useState('expense'); // 'expense' | 'income' | 'transfer'
           const [category, setCategory] = useState('Food');
+          const [customCategory, setCustomCategory] = useState(''); // New state for custom category
           const [account, setAccount] = useState('Cash'); // Holds wallet ID
           const [toAccount, setToAccount] = useState('Cash'); // For transfer, holds wallet ID
           const [note, setNote] = useState('');
@@ -814,12 +809,24 @@
           const [isDigital, setIsDigital] = useState(false); // Helper for UI toggle
           const [isToDigital, setIsToDigital] = useState(false);
 
+          // Use prop categories instead of hardcoded list
+          const displayCategories = categories || ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Income', 'Other'];
+
           useEffect(() => {
             if (initialData) {
               setAmount(Math.abs(initialData.amount));
               setTitle(initialData.title);
               setType(initialData.type || (initialData.amount > 0 ? 'income' : 'expense'));
-              setCategory(initialData.category);
+              
+              // Logic to handle custom categories in Edit mode
+              if (displayCategories.includes(initialData.category)) {
+                  setCategory(initialData.category);
+                  setCustomCategory('');
+              } else {
+                  setCategory('Other');
+                  setCustomCategory(initialData.category);
+              }
+
               setAccount(initialData.account); 
               setNote(initialData.note || '');
               setDate(initialData.date);
@@ -829,13 +836,13 @@
               }
               setIsDigital(initialData.account !== 'Cash');
             } else {
-              setAmount(''); setTitle(''); setType('expense'); setCategory('Food'); 
+              setAmount(''); setTitle(''); setType('expense'); setCategory('Food'); setCustomCategory('');
               setAccount('Cash'); setIsDigital(false);
               setToAccount('Cash'); setIsToDigital(false);
               setNote('');
               setDate(formatDateToISO(new Date())); 
             }
-          }, [initialData, isOpen]);
+          }, [initialData, isOpen, displayCategories]);
 
           if (!isOpen) return null;
 
@@ -846,12 +853,28 @@
                 return;
             }
 
+            // Determine final category name
+            let finalCategory = category;
+            if (type === 'expense') {
+                if (category === 'Other') {
+                    finalCategory = customCategory.trim() || 'Other';
+                    // Add to category list if it's a new custom category
+                    if (finalCategory !== 'Other') {
+                        onAddCategory(finalCategory);
+                    }
+                }
+            } else if (type === 'transfer') {
+                finalCategory = 'Transfer';
+            } else if (type === 'income') {
+                finalCategory = 'Income';
+            }
+
             onSave({ 
               id: initialData ? initialData.id : Date.now(),
               amount: parseFloat(amount), 
               title, 
               type, 
-              category: type === 'transfer' ? 'Transfer' : (type === 'income' ? 'Income' : category), 
+              category: finalCategory, 
               account, 
               toAccount: type === 'transfer' ? toAccount : null,
               note,
@@ -880,8 +903,6 @@
                   setAccFunc(firstDigital ? firstDigital.id : 'Cash'); 
               }
           };
-
-          const categories = ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Income', 'Other'];
           
           // Filter wallets for dropdown
           const digitalWallets = wallets.filter(w => w.id !== 'Cash');
@@ -904,7 +925,7 @@
                   <div>
                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Amount</label>
                     <div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}>
-                      <span className="text-2xl font-bold mr-2 opacity-50">$</span>
+                      <span className="text-2xl font-bold mr-2 opacity-50">৳</span>
                       <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="bg-transparent w-full text-4xl font-bold outline-none" autoFocus />
                     </div>
                   </div>
@@ -920,7 +941,26 @@
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Title</label><input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={type === 'transfer' ? "Transfer reason" : "What is this for?"} className={`w-full pb-2 border-b-2 bg-transparent outline-none font-medium text-lg transition-all ${isDarkMode ? 'border-gray-700 focus:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`} /></div>
                   
                   {type === 'expense' && (
-                    <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">Category</label><div className="flex flex-wrap gap-2">{categories.map(cat => (<button key={cat} type="button" onClick={() => setCategory(cat)} className={`px-4 py-2 rounded-full text-xs font-bold border transition-all ${category === cat ? (isDarkMode ? 'bg-white text-gray-900 border-white' : 'bg-gray-900 text-white border-gray-900') : (isDarkMode ? 'border-gray-700 text-gray-400 hover:border-gray-500' : 'border-gray-200 text-gray-500 hover:border-gray-400')}`}>{cat}</button>))}</div></div>
+                    <div>
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">Category</label>
+                        <div className="flex flex-wrap gap-2">
+                            {displayCategories.map(cat => (
+                                <button key={cat} type="button" onClick={() => setCategory(cat)} className={`px-4 py-2 rounded-full text-xs font-bold border transition-all ${category === cat ? (isDarkMode ? 'bg-white text-gray-900 border-white' : 'bg-gray-900 text-white border-gray-900') : (isDarkMode ? 'border-gray-700 text-gray-400 hover:border-gray-500' : 'border-gray-200 text-gray-500 hover:border-gray-400')}`}>{cat}</button>
+                            ))}
+                        </div>
+                        {category === 'Other' && (
+                            <div className="mt-3 animate-fade-in">
+                                <input 
+                                    type="text" 
+                                    value={customCategory} 
+                                    onChange={(e) => setCustomCategory(e.target.value)} 
+                                    placeholder="Enter custom category name..." 
+                                    className={`w-full px-4 py-3 rounded-xl border bg-transparent outline-none font-medium text-sm transition-all ${isDarkMode ? 'border-gray-700 focus:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}
+                                    autoFocus
+                                />
+                            </div>
+                        )}
+                    </div>
                   )}
                   
                   {/* FROM ACCOUNT SELECTOR */}
@@ -965,9 +1005,9 @@
 
                   {/* TO ACCOUNT SELECTOR (ONLY FOR TRANSFER) */}
                   {type === 'transfer' && (
-                     <div className="animate-fade-in border-t border-dashed pt-4 border-gray-200 dark:border-gray-700">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">To Account</label>
-                        <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="animate-fade-in border-t border-dashed pt-4 border-gray-200 dark:border-gray-700">
+                         <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 block">To Account</label>
+                         <div className="grid grid-cols-2 gap-3 mb-3">
                             <button type="button" onClick={() => handleTypeToggle(false, setToAccount, setIsToDigital)} className={`flex flex-col items-center justify-center gap-2 py-3 rounded-xl border transition-all ${!isToDigital ? (isDarkMode ? 'border-teal-500 text-teal-400 bg-teal-500/10' : 'border-teal-500 text-teal-600 bg-teal-50') : (isDarkMode ? 'border-gray-700 text-gray-400' : 'border-gray-200 text-gray-400')}`}>
                                 <Banknote size={18} />
                                 <span className="font-bold text-xs truncate w-full px-1">Cash</span>
@@ -1008,12 +1048,12 @@
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Note</label><div className="flex gap-3"><div className={`flex-1 flex items-center px-5 py-3 rounded-2xl border transition-all ${isDarkMode ? 'border-gray-700 text-white' : 'border-gray-200 text-gray-800'}`}><FileText size={18} className="mr-3 opacity-40" /><input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Write a note..." className="bg-transparent w-full font-medium outline-none" /></div><div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-all active:scale-95 ${isDarkMode ? 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500' : 'border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-200'}`}><ImageIcon size={22} /></div></div></div>
                   
                   <div className="flex gap-4 mt-2">
-                     {initialData && (
-                       <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                         <Trash2 size={24} />
-                       </button>
-                     )}
-                     <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all" style={{ background: type === 'income' ? theme.teal : (type === 'transfer' ? theme.royalBlue : theme.hotPink) }}>{initialData ? 'Update' : 'Save'}</button>
+                      {initialData && (
+                        <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
+                          <Trash2 size={24} />
+                        </button>
+                      )}
+                      <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all" style={{ background: type === 'income' ? theme.teal : (type === 'transfer' ? theme.royalBlue : theme.hotPink) }}>{initialData ? 'Update' : 'Save'}</button>
                   </div>
                 </form>
               </div>
@@ -1032,7 +1072,7 @@
               setAmount(initialData.amount);
               setPerson(initialData.person);
               setType(initialData.type);
-              setDueDate(initialData.dueDate ? formatDateToISO(new Date(initialData.dueDate)) : ''); 
+              setDueDate(initialData.dueDate ? formatDateToISO(new Date(initialData.dueDate)) : ''); 
             } else {
               setAmount(''); setPerson(''); setType('taken'); setDueDate('');
             }
@@ -1046,11 +1086,11 @@
                 if (showToast) showToast("Please enter an amount and person name", "error");
                 return;
             }
-            onSave({ 
+            onSave({ 
               id: initialData ? initialData.id : Date.now(),
-              amount: parseFloat(amount), 
-              person, 
-              type, 
+              amount: parseFloat(amount), 
+              person, 
+              type, 
               date: initialData ? initialData.date : formatDateToISO(new Date()),
               dueDate: dueDate ? new Date(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (initialData ? initialData.dueDate : 'No Due Date'),
               status: 'active'
@@ -1071,19 +1111,19 @@
                     <button type="button" onClick={() => setType('taken')} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${type === 'taken' ? (isDarkMode ? 'bg-gray-700 text-red-400 shadow-sm' : 'bg-white text-red-500 shadow-sm') : 'text-gray-400'}`}>I Borrowed</button>
                     <button type="button" onClick={() => setType('given')} className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${type === 'given' ? (isDarkMode ? 'bg-gray-700 text-teal-400 shadow-sm' : 'bg-white text-teal-600 shadow-sm') : 'text-gray-400'}`}>I Lent</button>
                   </div>
-                  <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Amount</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><span className="text-2xl font-bold mr-2 opacity-50">$</span><input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="bg-transparent w-full text-4xl font-bold outline-none" autoFocus /></div></div>
+                  <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Amount</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><span className="text-2xl font-bold mr-2 opacity-50">৳</span><input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="bg-transparent w-full text-4xl font-bold outline-none" autoFocus /></div></div>
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Person Name</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><User size={20} className="mr-3 opacity-50" /><input type="text" value={person} onChange={(e) => setPerson(e.target.value)} placeholder="Who is this?" className="bg-transparent w-full font-medium text-lg outline-none" /></div></div>
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Due Date</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><Calendar size={20} className="mr-3 opacity-50" /><input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="bg-transparent w-full font-medium text-lg outline-none" /></div></div>
                   
                   <div className="flex gap-4 mt-2">
-                     {initialData && (
-                       <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                         <Trash2 size={24} />
-                       </button>
-                     )}
-                     <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all" style={{ background: type === 'given' ? theme.teal : theme.hotPink }}>
-                       {initialData ? 'Update Loan' : 'Save Loan Record'}
-                     </button>
+                      {initialData && (
+                        <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
+                          <Trash2 size={24} />
+                        </button>
+                      )}
+                      <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all" style={{ background: type === 'given' ? theme.teal : theme.hotPink }}>
+                        {initialData ? 'Update Loan' : 'Save Loan Record'}
+                      </button>
                   </div>
                 </form>
               </div>
@@ -1103,7 +1143,7 @@
               setName(initialData.name);
               setCost(initialData.cost);
               setCycle(initialData.cycle);
-              setNextDate(initialData.nextDate ? formatDateToISO(new Date(initialData.nextDate)) : ''); 
+              setNextDate(initialData.nextDate ? formatDateToISO(new Date(initialData.nextDate)) : ''); 
             } else {
               setName(''); setCost(''); setCycle('Monthly'); setNextDate('');
             }
@@ -1139,19 +1179,19 @@
                 </div>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Service Name</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><Zap size={20} className="mr-3 opacity-50" /><input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Netflix" className="bg-transparent w-full font-medium text-lg outline-none" autoFocus /></div></div>
-                  <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Cost</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><span className="text-2xl font-bold mr-2 opacity-50">$</span><input type="number" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" className="bg-transparent w-full text-4xl font-bold outline-none" /></div></div>
+                  <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Cost</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><span className="text-2xl font-bold mr-2 opacity-50">৳</span><input type="number" value={cost} onChange={(e) => setCost(e.target.value)} placeholder="0.00" className="bg-transparent w-full text-4xl font-bold outline-none" /></div></div>
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Cycle</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><Repeat size={20} className="mr-3 opacity-50" /><select value={cycle} onChange={(e) => setCycle(e.target.value)} className={`bg-transparent w-full font-medium text-lg outline-none ${isDarkMode ? 'text-white' : 'text-gray-800'}`}><option value="Monthly">Monthly</option><option value="Yearly">Yearly</option><option value="Weekly">Weekly</option></select></div></div>
                   <div><label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Next Payment</label><div className={`flex items-center pb-2 border-b-2 transition-all ${isDarkMode ? 'border-gray-700 focus-within:border-white text-white' : 'border-gray-200 focus:border-gray-800 text-gray-800'}`}><Calendar size={20} className="mr-3 opacity-50" /><input type="date" value={nextDate} onChange={(e) => setNextDate(e.target.value)} className="bg-transparent w-full font-medium text-lg outline-none" /></div></div>
                   
                   <div className="flex gap-4 mt-2">
-                     {initialData && (
-                       <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                         <Trash2 size={24} />
-                       </button>
-                     )}
-                     <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all" style={{ background: theme.royalBlue }}>
-                       {initialData ? 'Update Sub' : 'Add Subscription'}
-                     </button>
+                      {initialData && (
+                        <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
+                          <Trash2 size={24} />
+                        </button>
+                      )}
+                      <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all" style={{ background: theme.royalBlue }}>
+                        {initialData ? 'Update Sub' : 'Add Subscription'}
+                      </button>
                   </div>
                 </form>
               </div>
@@ -1184,13 +1224,13 @@
                 if (showToast) showToast("Please enter a goal title and target amount", "error");
                 return;
             }
-            onSave({ 
+            onSave({ 
               id: initialData ? initialData.id : Date.now(),
-              title, 
-              target: parseFloat(target), 
+              title, 
+              target: parseFloat(target), 
               saved: parseFloat(saved) || 0,
               deadline: deadline ? new Date(deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date',
-              color: theme.royalBlue, 
+              color: theme.royalBlue, 
               icon: 'Target'
             });
             setTitle(''); setTarget(''); setSaved(''); setDeadline(''); onClose();
@@ -1198,7 +1238,7 @@
 
           return (
             <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center pointer-events-none">
-              <div 
+              <div 
                 className="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-auto transition-opacity animate-fade-in"
                 onClick={onClose}
               ></div>
@@ -1225,7 +1265,7 @@
                   <div>
                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Target Amount</label>
                     <div className={`flex items-center px-5 py-4 rounded-2xl border-2 transition-all ${isDarkMode ? 'bg-gray-900/50 border-gray-700 text-white' : 'bg-gray-50 border-gray-100 text-gray-800'} focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10`}>
-                      <span className="text-2xl font-bold mr-2 opacity-50">$</span>
+                      <span className="text-2xl font-bold mr-2 opacity-50">৳</span>
                       <input type="number" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="0.00" className="bg-transparent w-full text-4xl font-bold outline-none" />
                     </div>
                   </div>
@@ -1234,7 +1274,7 @@
                   <div>
                     <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1 mb-2 block">Already Saved</label>
                     <div className={`flex items-center px-5 py-4 rounded-2xl border-2 transition-all ${isDarkMode ? 'bg-gray-900/50 border-gray-700 text-white' : 'bg-gray-50 border-gray-100 text-gray-800'} focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10`}>
-                      <span className="text-xl font-bold mr-2 opacity-50">$</span>
+                      <span className="text-xl font-bold mr-2 opacity-50">৳</span>
                       <input type="number" value={saved} onChange={(e) => setSaved(e.target.value)} placeholder="0.00" className="bg-transparent w-full text-4xl font-bold outline-none" />
                     </div>
                   </div>
@@ -1249,15 +1289,15 @@
                   </div>
 
                   <div className="flex gap-4 mt-2">
-                     {initialData && (
-                       <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                         <Trash2 size={24} />
-                       </button>
-                     )}
-                     <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all"
-                      style={{ background: theme.royalBlue }}>
-                      {initialData ? 'Update Goal' : 'Create Goal'}
-                     </button>
+                      {initialData && (
+                        <button type="button" onClick={() => { onDelete(initialData.id); onClose(); }} className="p-4 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
+                          <Trash2 size={24} />
+                        </button>
+                      )}
+                      <button type="submit" className="flex-1 py-4 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all"
+                       style={{ background: theme.royalBlue }}>
+                       {initialData ? 'Update Goal' : 'Create Goal'}
+                      </button>
                   </div>
                 </form>
               </div>
@@ -1343,7 +1383,7 @@
                 </div>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     {/* Wallet Type Selection */}
-                     <div className={`flex p-1 rounded-xl mb-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                      <div className={`flex p-1 rounded-xl mb-2 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
                         {['Bank', 'Card', 'Cash'].map(t => (
                             <button 
                                 key={t}
@@ -1432,7 +1472,7 @@
                     )}
 
                     <button type="submit" className="w-full py-4 mt-2 rounded-xl text-white font-bold text-lg shadow-md active:scale-[0.98] transition-all" style={{ background: theme.royalBlue }}>
-                       Save Wallet
+                        Save Wallet
                     </button>
                 </form>
               </div>
@@ -1450,6 +1490,39 @@
           const DEFAULT_CYCLE_DAY = 25;
           const [salaryDate, setSalaryDate] = useState(DEFAULT_CYCLE_DAY);
           
+          const DEFAULT_CATEGORIES = ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Loan Repayment', 'Income', 'Other'];
+
+          // Initialize Categories from LocalStorage
+          const [categories, setCategories] = useState(() => {
+            try {
+              const saved = localStorage.getItem('categories');
+              return saved ? JSON.parse(saved) : DEFAULT_CATEGORIES;
+            } catch { return DEFAULT_CATEGORIES; }
+          });
+
+          // State for Loan Repaid Dropdown
+          const [isRepaidExpanded, setIsRepaidExpanded] = useState(false);
+
+          useEffect(() => {
+            localStorage.setItem('categories', JSON.stringify(categories));
+          }, [categories]);
+
+          // Function to add a new category
+          const handleAddCategory = useCallback((newCat) => {
+            setCategories(prev => {
+                if (prev.includes(newCat)) return prev;
+                // Insert new category before 'Other'
+                const newCats = [...prev];
+                const otherIndex = newCats.indexOf('Other');
+                if (otherIndex > -1) {
+                    newCats.splice(otherIndex, 0, newCat);
+                } else {
+                    newCats.push(newCat);
+                }
+                return newCats;
+            });
+          }, []);
+
           // Logic to determine the default view month based on cycle
           const [currentDate, setCurrentDate] = useState(() => {
             const now = new Date();
@@ -1522,12 +1595,12 @@
                     
                     // If subDate is valid and strictly in the past
                     if (!isNaN(subDate) && subDate < today) {
-                         updated = true;
-                         let nextDate = new Date(subDate);
-                         
-                         // Increment until the date is in the future
-                         // This handles cases where the app wasn't opened for multiple months
-                         while (nextDate < today) {
+                          updated = true;
+                          let nextDate = new Date(subDate);
+                          
+                          // Increment until the date is in the future
+                          // This handles cases where the app wasn't opened for multiple months
+                          while (nextDate < today) {
                              if (sub.cycle === 'Monthly') {
                                  nextDate.setMonth(nextDate.getMonth() + 1);
                              } else if (sub.cycle === 'Weekly') {
@@ -1538,12 +1611,12 @@
                                  // Default fallback to monthly
                                  nextDate.setMonth(nextDate.getMonth() + 1);
                              }
-                         }
-                         
-                         return {
+                          }
+                          
+                          return {
                              ...sub,
                              nextDate: nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                         };
+                          };
                     }
                     return sub;
                 });
@@ -1689,6 +1762,19 @@
               return acc;
             }, { totalGiven: 0, totalTaken: 0 });
           }, [loans]);
+
+          const loanRepaidTotal = useMemo(() => {
+            return dateFilteredTransactions
+                .filter(t => (t.category === 'Loan Repayment' || t.category === 'Loan Paid') && t.type === 'expense')
+                .reduce((acc, t) => acc + Math.abs(t.amount), 0);
+          }, [dateFilteredTransactions]);
+
+          // Get list of repaid transactions for dropdown
+          const repaidTransactionsList = useMemo(() => {
+            return dateFilteredTransactions
+                .filter(t => (t.category === 'Loan Repayment' || t.category === 'Loan Paid') && t.type === 'expense')
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+          }, [dateFilteredTransactions]);
 
           const { totalGoalTarget, totalGoalSaved } = useMemo(() => {
             return goals.reduce((acc, g) => {
@@ -2001,13 +2087,17 @@
               }
             });
 
+            // Calculate recommended savings (20% of income)
+            const incomeBasedSavings = totalIncome * 0.20;
+
             return {
               maxCat,
               maxVal,
               potentialSavings: maxVal * 0.15,
-              projectedBalance: totalBalance + (maxVal * 0.15)
+              projectedBalance: totalBalance + (maxVal * 0.15),
+              incomeBasedSavings
             };
-          }, [dateFilteredTransactions, totalBalance]);
+          }, [dateFilteredTransactions, totalBalance, totalIncome]);
 
           const fetchGeminiAdvice = useCallback(async () => {
             setLoadingGemini(true);
@@ -2035,12 +2125,12 @@
             switch (activeTab) {
               case 'home':
                 return (
-                  <div key="home" className="animate-page-enter">
+                  <div key="home" className="animate-page-enter pt-48 pb-32">
                     <MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} />
                     <BalanceCard totalBalance={totalBalance} income={totalIncome} expense={totalExpense} isDarkMode={isDarkMode} />
                     <QuickActions isDarkMode={isDarkMode} onNavigate={setActiveTab} />
                     {/* Increased mobile padding to pb-40 */}
-                    <div className={`${cardBgClass} rounded-t-[2.5rem] mt-2 px-6 pt-8 pb-40 md:pb-8 min-h-screen shadow-[0_-10px_40px_rgba(0,0,0,0.02)] animate-slide-up-fade transition-colors duration-300 relative`} style={{ animationDelay: '0.2s' }}>
+                    <div className={`${cardBgClass} rounded-t-[2.5rem] mt-2 px-6 pt-8 pb-32 min-h-screen shadow-[0_-10px_40px_rgba(0,0,0,0.02)] animate-slide-up-fade transition-colors duration-300 relative`} style={{ animationDelay: '0.2s' }}>
                       <div className="flex justify-between items-center mb-6">
                         <h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Recent Activity</h3>
                       </div>
@@ -2065,16 +2155,15 @@
                           ))
                         ) : (<p className="text-center text-gray-400 py-8 text-sm">No transactions found for this period.</p>)}
                       </div>
+                      <div className="h-32"></div>
                     </div>
                   </div>
                 );
                 case 'wallet': return (
-                    // Restored w-full and px-6 on wrapper, removed mx-6 from children
-                    <div key="wallet" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
+                    <div key="wallet" className="px-6 pb-32 animate-page-enter w-full pt-48 min-h-full flex flex-col">
                         <div className={`p-6 rounded-[2rem] shadow-sm mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                            {/* Updated: Added conditional text color for Dark Mode */}
                             <span className={`text-xs font-bold uppercase tracking-widest opacity-60 block mb-1 ${isDarkMode ? 'text-white' : 'text-gray-500'}`}>Total Assets</span>
-                            <h3 className={`text-3xl font-bold ${textColor}`} style={textStyle}>${totalAssets.toLocaleString()}</h3>
+                            <h3 className={`text-3xl font-bold ${textColor}`} style={textStyle}>৳{totalAssets.toLocaleString()}</h3>
                         </div>
 
                         <div className="flex flex-col gap-4 mb-6">
@@ -2095,38 +2184,96 @@
                             <PlusCircle size={20} />
                             <span className="font-bold text-sm">Add New Wallet</span>
                         </button>
+                        {/* Spacer div to ensure bottom content isn't hidden behind nav */}
+                        <div className="h-32"></div>
                     </div>
                 );
                 case 'loans': return (
-                    // Restored w-full and px-6 on wrapper
-                    <div key="loans" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
-                      <div className="flex gap-4 mb-8">
+                    <div key="loans" className="px-6 pb-32 animate-page-enter w-full pt-48">
+                      <div className="pt-2">
+                          <MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} />
+                      </div>
+                      
+                      <div className="mb-6 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl flex items-center justify-between border border-indigo-100 dark:border-indigo-800 animate-scale-in">
+                          <div className="flex items-center gap-3">
+                              <div className="p-2 bg-indigo-100 dark:bg-indigo-800 text-indigo-600 dark:text-indigo-300 rounded-xl">
+                                  <Check size={20} />
+                              </div>
+                              <div>
+                                  <p className="text-xs font-bold uppercase tracking-widest opacity-60 text-indigo-900 dark:text-indigo-300">Loan Repayments (This Month)</p>
+                                  <h3 className="text-xl font-bold text-indigo-700 dark:text-white">৳{loanRepaidTotal.toLocaleString()}</h3>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div className="flex gap-4 mb-6">
                         <div className={`flex-1 p-5 rounded-[1.5rem] shadow-sm ${isDarkMode ? 'bg-red-500/10' : 'bg-red-50'}`}>
                           <div className="flex items-center gap-2 mb-2 opacity-80"><ArrowDownLeft size={16} className="text-red-500" /><span className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Borrowed</span></div>
-                          <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>${totalTaken.toLocaleString()}</h3>
+                          <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>৳{totalTaken.toLocaleString()}</h3>
                         </div>
                         <div className={`flex-1 p-5 rounded-[1.5rem] shadow-sm ${isDarkMode ? 'bg-teal-500/10' : 'bg-teal-50'}`}>
                           <div className="flex items-center gap-2 mb-2 opacity-80"><ArrowUpRight size={16} className="text-teal-500" /><span className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-teal-400' : 'text-teal-700'}`}>Lent</span></div>
-                          <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-teal-400' : 'text-teal-700'}`}>${totalGiven.toLocaleString()}</h3>
+                          <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-teal-400' : 'text-teal-700'}`}>৳{totalGiven.toLocaleString()}</h3>
                         </div>
                       </div>
-                      <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300`}>
+
+                      <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300 mb-6`}>
                         <div className="flex justify-between items-center mb-6"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Active Loans</h3><span className="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">{filteredLoans.length}</span></div>
                         <div className="flex flex-col gap-1">{filteredLoans.length > 0 ? (filteredLoans.map((loan, idx) => (<LoanItem key={loan.id} item={loan} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingLoan(item); setIsLoanModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No active loans found.</p>)}</div>
                       </div>
+
+                      {/* Repaid Section (Moved & Expandable) */}
+                      <div 
+                          onClick={() => setIsRepaidExpanded(!isRepaidExpanded)}
+                          className={`mb-6 p-4 rounded-2xl border transition-all cursor-pointer animate-slide-up-fade ${isDarkMode ? 'bg-indigo-900/20 border-indigo-800' : 'bg-indigo-50 border-indigo-100'}`}
+                          style={{ animationDelay: '0.1s' }}
+                      >
+                          <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                  <div className={`p-2 rounded-xl ${isDarkMode ? 'bg-indigo-800 text-indigo-300' : 'bg-indigo-100 text-indigo-600'}`}>
+                                      <Check size={20} />
+                                  </div>
+                                  <div>
+                                      <p className={`text-xs font-bold uppercase tracking-widest opacity-60 ${isDarkMode ? 'text-indigo-300' : 'text-indigo-900'}`}>Loan Repayments (This Month)</p>
+                                      <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-indigo-700'}`}>৳{loanRepaidTotal.toLocaleString()}</h3>
+                                  </div>
+                              </div>
+                              <ChevronDown size={20} className={`transform transition-transform duration-300 ${isRepaidExpanded ? 'rotate-180' : ''} ${isDarkMode ? 'text-indigo-300' : 'text-indigo-400'}`} />
+                          </div>
+
+                          {/* Dropdown Content */}
+                          {isRepaidExpanded && (
+                              <div className="mt-4 pt-3 border-t border-dashed border-indigo-200 dark:border-indigo-700/50 space-y-2 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                  {repaidTransactionsList.length > 0 ? (
+                                      repaidTransactionsList.map((t) => (
+                                          <div key={t.id} className="flex justify-between items-center text-xs px-2 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                              <div className="flex flex-col">
+                                                  <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.title}</span>
+                                                  <span className="text-[10px] text-gray-500">{formatDisplayDate(t.date)}</span>
+                                              </div>
+                                              <span className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>৳{Math.abs(t.amount).toLocaleString()}</span>
+                                          </div>
+                                      ))
+                                  ) : (
+                                      <p className="text-center text-[10px] text-gray-400 italic py-1">No repayments recorded this month</p>
+                                  )}
+                              </div>
+                          )}
+                      </div>
+
                       <button 
                           onClick={() => { setEditingLoan(null); setIsLoanModalOpen(true); }}
-                          className={`w-full py-4 mt-6 rounded-2xl border-2 border-dashed flex items-center justify-center gap-2 transition-all ${isDarkMode ? 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-300' : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-600'}`}
+                          className={`w-full py-4 mt-2 rounded-2xl border-2 border-dashed flex items-center justify-center gap-2 transition-all ${isDarkMode ? 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-300' : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-600'}`}
                       >
                           <PlusCircle size={20} />
                           <span className="font-bold text-sm">Add New Loan</span>
                       </button>
+                      <div className="h-32"></div>
                     </div>
                 );
                 case 'goals': return (
-                    // Restored w-full and px-6 on wrapper
-                    <div key="goals" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
-                      <div className={`p-6 rounded-[2rem] shadow-lg mb-8 relative overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-[#052065]'}`}><div className="relative z-10 flex justify-between items-end"><div className="text-white"><span className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1 block">Total Saved</span><h3 className="text-3xl font-bold">${totalGoalSaved.toLocaleString()}</h3><p className="text-xs opacity-60 mt-1">Target: ${totalGoalTarget.toLocaleString()}</p></div><div className="w-16 h-16 rounded-full border-4 border-teal-400 flex items-center justify-center text-white font-bold">{totalGoalTarget > 0 ? Math.round((totalGoalSaved / totalGoalTarget) * 100) : 0}%</div></div><div className="absolute -right-6 -bottom-10 opacity-10"><Trophy size={120} color="white" /></div></div>
+                    <div key="goals" className="px-6 pb-32 animate-page-enter w-full pt-48">
+                      <div className={`p-6 rounded-[2rem] shadow-lg mb-8 relative overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-[#052065]'}`}><div className="relative z-10 flex justify-between items-end"><div className="text-white"><span className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1 block">Total Saved</span><h3 className="text-3xl font-bold">৳{totalGoalSaved.toLocaleString()}</h3><p className="text-xs opacity-60 mt-1">Target: ৳{totalGoalTarget.toLocaleString()}</p></div><div className="w-16 h-16 rounded-full border-4 border-teal-400 flex items-center justify-center text-white font-bold">{totalGoalTarget > 0 ? Math.round((totalGoalSaved / totalGoalTarget) * 100) : 0}%</div></div><div className="absolute -right-6 -bottom-10 opacity-10"><Trophy size={120} color="white" /></div></div>
                       <div><div className="flex justify-between items-center mb-4"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Your Targets</h3></div><div className="flex flex-col gap-1">{filteredGoals.length > 0 ? (filteredGoals.map((goal, idx) => (<GoalItem key={goal.id} item={goal} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingGoal(item); setIsAddGoalModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No goals set yet.</p>)}</div></div>
                       <button 
                           onClick={() => { setEditingGoal(null); setIsAddGoalModalOpen(true); }}
@@ -2135,11 +2282,11 @@
                           <PlusCircle size={20} />
                           <span className="font-bold text-sm">Create New Goal</span>
                       </button>
+                      <div className="h-32"></div>
                     </div>
                 );
                 case 'subs': return (
-                    // Restored w-full and px-6 on wrapper
-                    <div key="subs" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
+                    <div key="subs" className="px-6 pb-32 animate-page-enter w-full pt-48">
                       <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300`}>
                         <div className="flex justify-between items-center mb-6"><h3 className={`font-bold text-lg tracking-tight ${textColor}`} style={textStyle}>Active Subs</h3><span className="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">{filteredSubs.length}</span></div><div className="flex flex-col gap-1">{filteredSubs.length > 0 ? (filteredSubs.map((sub, idx) => (<SubItem key={sub.id} item={sub} index={idx} isDarkMode={isDarkMode} onClick={(item) => { setEditingSub(item); setIsSubModalOpen(true); }} />))) : (<p className="text-center text-gray-400 py-8 text-sm">No subscriptions added.</p>)}</div>
                       </div>
@@ -2150,90 +2297,145 @@
                           <PlusCircle size={20} />
                           <span className="font-bold text-sm">Add Subscription</span>
                       </button>
+                      <div className="h-32"></div>
                     </div>
                 );
                 case 'stats': return (
-                    // Added responsive pb-40 for mobile, md:pb-8 for desktop
-                    <div key="stats" className="pb-40 md:pb-8 animate-page-enter mt-4 w-full"><div className="pt-2"><MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} /></div><div className="px-6"><div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3><DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
-                          <div className="grid grid-cols-1 gap-y-2 mt-6"> 
-                            {currentStatsData.map((d, i) => (
-                              // Updated background color logic: subtle gray for light mode, transparent white for dark mode
-                              // ADDED onClick handler to toggle accordion dropdown
-                              <div 
-                                key={i} 
-                                onClick={() => toggleCategory(d.label)}
-                                className={`group relative overflow-hidden rounded-2xl p-3 transition-all cursor-pointer ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-50 hover:bg-gray-100'} active:scale-[0.98]`}
-                              >
-                                  {/* Progress bar background - subtle tint based on category color */}
-                                  <div className="absolute bottom-0 left-0 h-full opacity-[0.05] transition-all duration-1000 ease-out" style={{ width: `${(d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100}%`, backgroundColor: d.color }} />
-                                  
-                                  <div className="flex items-center justify-between relative z-10">
-                                      <div className="flex items-center gap-3">
-                                          {/* Icon circle - Flat with color tint */}
-                                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold" style={{ color: d.color, backgroundColor: d.color + '20' }}>{d.label.charAt(0)}</div>
-                                          <span className={`text-sm font-semibold tracking-tight ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>{d.label}</span>
-                                      </div>
-                                      <div className="flex items-center gap-3">
-                                          <span className={`text-sm font-bold tabular-nums ${textColor}`} style={textStyle}>{d.value === 1 && d.label === 'No Data' ? '-' : `$${d.value.toLocaleString()}`}</span>
-                                          {/* Percentage Badge - clean text */}
-                                          <span className={`text-[10px] font-bold px-2 py-1 rounded-lg min-w-[45px] text-center ${isDarkMode ? 'text-gray-400 bg-black/20' : 'text-gray-500 bg-white'}`}>{d.value === 1 && d.label === 'No Data' ? '0%' : `${Math.round((d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100)}%`}</span>
-                                          <ChevronDown size={14} className={`transform transition-transform duration-300 ${expandedCategory === d.label ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
-                                      </div>
-                                  </div>
-
-                                  {/* Accordion Dropdown Content */}
-                                  {expandedCategory === d.label && (
-                                    <div className="mt-3 pt-3 border-t border-dashed border-gray-200 dark:border-gray-700/50 space-y-2 animate-fade-in cursor-default" onClick={(e) => e.stopPropagation()}>
-                                        {dateFilteredTransactions
-                                            .filter(t => t.category === d.label && t.type === 'expense')
-                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
-                                            .map(t => (
-                                                <div key={t.id} className="flex justify-between items-center text-xs px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                                                    <div className="flex flex-col">
-                                                        <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.title}</span>
-                                                        <span className="text-[10px] text-gray-500">{formatDisplayDate(t.date)}</span>
-                                                    </div>
-                                                    <span className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>${Math.abs(t.amount).toLocaleString()}</span>
-                                                </div>
-                                            ))
-                                        }
-                                        {dateFilteredTransactions.filter(t => t.category === d.label && t.type === 'expense').length === 0 && (
-                                            <p className="text-center text-[10px] text-gray-400 italic py-1">No recent transactions</p>
-                                        )}
-                                    </div>
-                                  )}
-                              </div>
-                            ))}
-                          </div>
+                    <div key="stats" className="pb-32 animate-page-enter w-full pt-48">
+                        <div className="pt-2">
+                            <MonthSelector date={currentDate} salaryDate={salaryDate} onPrev={() => changeMonth(-1)} onNext={() => changeMonth(1)} isDarkMode={isDarkMode} />
                         </div>
-                        <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.2s' }}><h3 className={`font-bold mb-8 ${textColor}`} style={textStyle}>Weekly Spending</h3><BarChart data={last7DaysChartData} isDarkMode={isDarkMode} /></div></div></div>
+                        <div className="px-6">
+                            <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.1s' }}>
+                                <h3 className={`font-bold mb-4 ${textColor}`} style={textStyle}>Expense Breakdown</h3>
+                                <DonutChart data={currentStatsData} isDarkMode={isDarkMode} />
+                                
+                                <div className="grid grid-cols-1 gap-y-2 mt-6"> 
+                                    {currentStatsData.map((d, i) => (
+                                        <div 
+                                            key={i} 
+                                            onClick={() => toggleCategory(d.label)}
+                                            className={`group relative overflow-hidden rounded-2xl p-3 transition-all cursor-pointer ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-50 hover:bg-gray-100'} active:scale-[0.98]`}
+                                        >
+                                            <div className="absolute bottom-0 left-0 h-full opacity-[0.05] transition-all duration-1000 ease-out" style={{ width: `${(d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100}%`, backgroundColor: d.color }} />
+                                            
+                                            <div className="flex items-center justify-between relative z-10">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold" style={{ color: d.color, backgroundColor: d.color + '20' }}>{d.label.charAt(0)}</div>
+                                                    <span className={`text-sm font-semibold tracking-tight ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>{d.label}</span>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`text-sm font-bold tabular-nums ${textColor}`} style={textStyle}>{d.value === 1 && d.label === 'No Data' ? '-' : `৳${d.value.toLocaleString()}`}</span>
+                                                    <span className={`text-[10px] font-bold px-2 py-1 rounded-lg min-w-[45px] text-center ${isDarkMode ? 'text-gray-400 bg-black/20' : 'text-gray-500 bg-white'}`}>{d.value === 1 && d.label === 'No Data' ? '0%' : `${Math.round((d.value / currentStatsData.reduce((acc, curr) => acc + curr.value, 0)) * 100)}%`}</span>
+                                                    <ChevronDown size={14} className={`transform transition-transform duration-300 ${expandedCategory === d.label ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                                                </div>
+                                            </div>
+
+                                            {expandedCategory === d.label && (
+                                                <div className="mt-3 pt-3 border-t border-dashed border-gray-200 dark:border-gray-700/50 space-y-2 animate-fade-in cursor-default" onClick={(e) => e.stopPropagation()}>
+                                                    {dateFilteredTransactions
+                                                        .filter(t => t.category === d.label && t.type === 'expense')
+                                                        .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                                        .map(t => (
+                                                            <div key={t.id} className="flex justify-between items-center text-xs px-2 py-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                                                <div className="flex flex-col">
+                                                                    <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t.title}</span>
+                                                                    <span className="text-[10px] text-gray-500">{formatDisplayDate(t.date)}</span>
+                                                                </div>
+                                                                <span className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>৳{Math.abs(t.amount).toLocaleString()}</span>
+                                                            </div>
+                                                        ))
+                                                    }
+                                                    {dateFilteredTransactions.filter(t => t.category === d.label && t.type === 'expense').length === 0 && (
+                                                        <p className="text-center text-[10px] text-gray-400 italic py-1">No recent transactions</p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-scale-in transition-colors duration-300`} style={{ animationDelay: '0.2s' }}><h3 className={`font-bold mb-8 ${textColor}`} style={textStyle}>Weekly Spending</h3><BarChart data={last7DaysChartData} isDarkMode={isDarkMode} /></div>
+                            <div className="h-32"></div>
+                        </div>
+                    </div>
                 );
               case 'suggestions':
                 return (
                   // Removed w-full
-                  <div key="suggestions" className="px-6 pb-40 md:pb-8 animate-page-enter mt-4 w-full">
+                  <div key="suggestions" className="px-6 pb-32 animate-page-enter w-full pt-48">
                     <div className="flex items-center justify-end mt-4 mb-6">
                         <button onClick={fetchGeminiAdvice} disabled={loadingGemini} className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50">{loadingGemini ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}{loadingGemini ? 'Analyzing...' : 'Ask AI'}</button>
                     </div>
-                    {geminiData && (<div className="p-6 rounded-[2rem] shadow-lg mb-6 bg-gradient-to-br from-indigo-600 to-purple-700 text-white animate-scale-in relative overflow-hidden"><div className="relative z-10"><div className="flex items-center gap-2 mb-3"><div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm"><Sparkles size={16} className="text-yellow-300" /></div><span className="text-xs font-bold uppercase tracking-widest opacity-90">Gemini Advisor</span></div><h3 className="text-xl font-bold mb-2 leading-tight">{geminiData.analysis}</h3><div className="bg-black/20 rounded-xl p-4 mt-4 backdrop-blur-sm border border-white/10"><p className="text-sm font-medium mb-1 opacity-80 uppercase text-xs tracking-wider">Action Plan</p><p className="text-sm leading-relaxed">{geminiData.actionable_tip}</p></div><div className="mt-4 flex items-center gap-2"><span className="text-sm opacity-80">Potential Savings:</span><span className="text-xl font-bold text-green-300">${geminiData.potential_savings}</span></div></div><div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div><div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/30 rounded-full blur-2xl -ml-5 -mb-5"></div></div>)}
-                    {!geminiData && (<div className={`p-6 rounded-[2rem] shadow-lg mb-6 relative overflow-hidden ${isDarkMode ? 'bg-gradient-to-br from-indigo-900 to-gray-900' : 'bg-gradient-to-br from-[#052065] to-[#0060E5]'}`}><div className="relative z-10 text-white"><div className="flex items-center gap-2 mb-2 opacity-80"><Target size={18} className="text-yellow-300" /><span className="text-xs font-bold uppercase tracking-widest">Monthly Goal</span></div><h3 className="text-2xl font-bold mb-1">Save ${Math.floor(insights.potentialSavings)} more</h3><p className="opacity-80 text-sm mb-6">Based on your current spending patterns.</p><div className="flex gap-4"><div className="flex-1 bg-white/10 rounded-xl p-3 backdrop-blur-sm"><span className="text-[10px] font-bold uppercase opacity-70 block mb-1">Current</span><span className="text-lg font-bold">${totalBalance.toLocaleString()}</span></div><div className="flex-1 bg-white/20 rounded-xl p-3 backdrop-blur-sm border border-white/20"><span className="text-[10px] font-bold uppercase opacity-70 block mb-1 text-green-200">Potential</span><span className="text-lg font-bold text-green-300">${insights.projectedBalance.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div></div></div><div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div></div>)}
-                    <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-slide-up-fade transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><div className="flex items-start gap-4"><div className={`p-3 rounded-2xl ${isDarkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-50 text-red-500'}`}><TrendingDown size={24} /></div><div><h4 className={`font-bold text-lg mb-1 ${textColor}`} style={textStyle}>High Spending Alert</h4><p className="text-sm text-gray-500 leading-relaxed mb-3">You've spent <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>${insights.maxVal}</span> on <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{insights.maxCat}</span> this month.
+                    {geminiData && (<div className="p-6 rounded-[2rem] shadow-lg mb-6 bg-gradient-to-br from-indigo-600 to-purple-700 text-white animate-scale-in relative overflow-hidden"><div className="relative z-10"><div className="flex items-center gap-2 mb-3"><div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm"><Sparkles size={16} className="text-yellow-300" /></div><span className="text-xs font-bold uppercase tracking-widest opacity-90">Gemini Advisor</span></div><h3 className="text-xl font-bold mb-2 leading-tight">{geminiData.analysis}</h3><div className="bg-black/20 rounded-xl p-4 mt-4 backdrop-blur-sm border border-white/10"><p className="text-sm font-medium mb-1 opacity-80 uppercase text-xs tracking-wider">Action Plan</p><p className="text-sm leading-relaxed">{geminiData.actionable_tip}</p></div><div className="mt-4 flex items-center gap-2"><span className="text-sm opacity-80">Potential Savings:</span><span className="text-xl font-bold text-green-300">৳{geminiData.potential_savings}</span></div></div><div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div><div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/30 rounded-full blur-2xl -ml-5 -mb-5"></div></div>)}
+                    {!geminiData && (
+                        <div className={`p-6 rounded-[2rem] shadow-lg mb-6 relative overflow-hidden ${isDarkMode ? 'bg-gradient-to-br from-indigo-900 to-gray-900' : 'bg-gradient-to-br from-[#052065] to-[#0060E5]'}`}>
+                            <div className="relative z-10 text-white">
+                                <div className="flex items-center gap-2 mb-2 opacity-80">
+                                    <Target size={18} className="text-yellow-300" />
+                                    <span className="text-xs font-bold uppercase tracking-widest">Smart Savings Goal</span>
+                                </div>
+                                
+                                {totalIncome > 0 ? (
+                                    <>
+                                        <h3 className="text-2xl font-bold mb-1">Save ৳{insights.incomeBasedSavings.toLocaleString()}</h3>
+                                        <p className="opacity-80 text-sm mb-6">Target: 20% of your monthly income.</p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h3 className="text-2xl font-bold mb-1">Save ৳{Math.floor(insights.potentialSavings)} more</h3>
+                                        <p className="opacity-80 text-sm mb-6">Based on reducing your spending patterns.</p>
+                                    </>
+                                )}
+
+                                <div className="flex gap-4">
+                                    <div className="flex-1 bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+                                        <span className="text-[10px] font-bold uppercase opacity-70 block mb-1">Income</span>
+                                        <span className="text-lg font-bold">৳{totalIncome.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex-1 bg-white/20 rounded-xl p-3 backdrop-blur-sm border border-white/20">
+                                        <span className="text-[10px] font-bold uppercase opacity-70 block mb-1 text-green-200">Current Saved</span>
+                                        <span className="text-lg font-bold text-green-300">৳{(totalIncome + totalExpense).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                                
+                                {/* Progress Bar for Savings Goal */}
+                                {totalIncome > 0 && (
+                                    <div className="mt-4">
+                                        <div className="flex justify-between text-xs font-bold mb-1 opacity-70">
+                                            <span>Progress</span>
+                                            <span>{Math.min(100, Math.max(0, Math.round(((totalIncome + totalExpense) / insights.incomeBasedSavings) * 100)))}%</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-black/20 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-yellow-400 rounded-full transition-all duration-1000" 
+                                                style={{ width: `${Math.min(100, Math.max(0, ((totalIncome + totalExpense) / insights.incomeBasedSavings) * 100))}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                        </div>
+                    )}
+                    <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-slide-up-fade transition-colors duration-300`} style={{ animationDelay: '0.1s' }}><div className="flex items-start gap-4"><div className={`p-3 rounded-2xl ${isDarkMode ? 'bg-red-500/20 text-red-400' : 'bg-red-50 text-red-500'}`}><TrendingDown size={24} /></div><div><h4 className={`font-bold text-lg mb-1 ${textColor}`} style={textStyle}>High Spending Alert</h4><p className="text-sm text-gray-500 leading-relaxed mb-3">You've spent <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>৳{insights.maxVal}</span> on <span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{insights.maxCat}</span> this month.
                           </p>
                           <div className={`p-3 rounded-xl border border-dashed ${isDarkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
                             <p className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                              💡 <strong>Tip:</strong> Reducing this by just 15% could save you <strong>${Math.floor(insights.potentialSavings)}</strong>/mo.
+                              💡 <strong>Tip:</strong> Reducing this by just 15% could save you <strong>৳{Math.floor(insights.potentialSavings)}</strong>/mo.
                             </p>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300`} style={{ animationDelay: '0.2s' }}><div className="flex items-center gap-3 mb-4"><div className={`p-2 rounded-xl ${isDarkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600'}`}><Target size={20} /></div><h4 className={`font-bold ${textColor}`} style={textStyle}>Budget Health</h4></div><div className="space-y-4"><div><div className="flex justify-between text-xs font-bold mb-2 opacity-70"><span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>Necessities (50%)</span><span className={isDarkMode ? 'text-white' : 'text-gray-900'}>$1,240 / $2,000</span></div><div className={`h-2 w-full rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><div className="h-full bg-blue-500 rounded-full" style={{ width: '62%' }}></div></div></div><div><div className="flex justify-between text-xs font-bold mb-2 opacity-70"><span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>Wants (30%)</span><span className={isDarkMode ? 'text-white' : 'text-gray-900'}>$850 / $1,200</span></div><div className={`h-2 w-full rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><div className="h-full bg-purple-500 rounded-full" style={{ width: '70%' }}></div></div></div><div><div className="flex justify-between text-xs font-bold mb-2 opacity-70"><span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>Savings (20%)</span><span className={isDarkMode ? 'text-white' : 'text-gray-900'}>$300 / $800</span></div><div className={`h-2 w-full rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><div className="h-full bg-teal-500 rounded-full" style={{ width: '37%' }}></div></div></div></div></div>
+                    <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm animate-slide-up-fade transition-colors duration-300`} style={{ animationDelay: '0.2s' }}><div className="flex items-center gap-3 mb-4"><div className={`p-2 rounded-xl ${isDarkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600'}`}><Target size={20} /></div><h4 className={`font-bold ${textColor}`} style={textStyle}>Budget Health</h4></div><div className="space-y-4"><div><div className="flex justify-between text-xs font-bold mb-2 opacity-70"><span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>Necessities (50%)</span><span className={isDarkMode ? 'text-white' : 'text-gray-900'}>৳1,240 / ৳2,000</span></div><div className={`h-2 w-full rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><div className="h-full bg-blue-500 rounded-full" style={{ width: '62%' }}></div></div></div><div><div className="flex justify-between text-xs font-bold mb-2 opacity-70"><span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>Wants (30%)</span><span className={isDarkMode ? 'text-white' : 'text-gray-900'}>৳850 / ৳1,200</span></div><div className={`h-2 w-full rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><div className="h-full bg-purple-500 rounded-full" style={{ width: '70%' }}></div></div></div><div><div className="flex justify-between text-xs font-bold mb-2 opacity-70"><span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>Savings (20%)</span><span className={isDarkMode ? 'text-white' : 'text-gray-900'}>৳300 / ৳800</span></div><div className={`h-2 w-full rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}><div className="h-full bg-teal-500 rounded-full" style={{ width: '37%' }}></div></div></div></div></div>
+                    <div className="h-32"></div>
                   </div>
                 );
               case 'profile':
                 return (
-                  <div key="profile" className="px-6 pb-40 md:pb-8 animate-page-enter mt-6 w-full">
+                  <div key="profile" className="px-6 pb-40 md:pb-8 animate-page-enter w-full pt-48">
                     <div className={`${cardBgClass} p-6 rounded-[2rem] shadow-sm mb-6 animate-slide-up-fade transition-colors duration-300`}>
                       <div className={`flex items-center justify-between mb-8 pb-8 border-b ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}>
                         <div className="flex items-center gap-4"><div className={`p-3 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>{isDarkMode ? <Moon size={20} className="text-gray-300" /> : <Sun size={20} className="text-indigo-600" />}</div><div><h3 className={`font-bold ${textColor}`} style={textStyle}>Dark Mode</h3><p className="text-xs text-gray-400 mt-1">Adjust screen brightness</p></div></div>
@@ -2276,11 +2478,12 @@
                         </button>
                       </div>
                     </div>
+                    <div className="h-32"></div>
                   </div>
                 );
               default:
                 return (
-                  <div key="other" className="flex flex-col items-center justify-center h-[60vh] text-gray-400 px-10 text-center animate-page-enter">
+                  <div key="other" className="flex flex-col items-center justify-center h-[60vh] text-gray-400 px-10 text-center animate-page-enter pt-48">
                     <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}><Settings size={32} className="opacity-50" /></div>
                     <p className="font-medium text-sm">This section is under development.</p>
                   </div>
@@ -2293,10 +2496,13 @@
           return (
             <div className={`h-screen font-sans relative w-full shadow-2xl overflow-hidden transition-colors duration-300 ${mainBgClass} flex flex-col`}>
               {showWelcome && <WelcomeModal onSave={handleNameSave} isDarkMode={isDarkMode} />}
+              
+              <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} searchQuery={searchQuery} setSearchQuery={setSearchQuery} notifications={notifications} isNotifOpen={isNotifOpen} setIsNotifOpen={setIsNotifOpen} activeTab={activeTab} userName={userName} />
+              
               <div className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth relative z-10" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} searchQuery={searchQuery} setSearchQuery={setSearchQuery} notifications={notifications} isNotifOpen={isNotifOpen} setIsNotifOpen={setIsNotifOpen} activeTab={activeTab} userName={userName} />
                   {renderContent()}
               </div>
+              
               {activeTab === 'home' && (
                 <button onClick={() => { if (activeTab === 'loans') { setEditingLoan(null); setIsLoanModalOpen(true); } else if (activeTab === 'goals') { setEditingGoal(null); setIsAddGoalModalOpen(true); } else if (activeTab === 'subs') { setEditingSub(null); setIsSubModalOpen(true); } else { setEditingTransaction(null); setIsTransactionModalOpen(true); } }} className="fixed bottom-24 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 hover:scale-105 active:scale-95 z-50 animate-bounce-in group" style={{ background: theme.hotPink }}><Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" /></button>
               )}
@@ -2316,13 +2522,14 @@
                 showToast={showToast} 
                 wallets={wallets} 
                 onManageWallets={handleManageWallets}
+                categories={categories}
+                onAddCategory={handleAddCategory}
               />
               <LoanModal isOpen={isLoanModalOpen} onClose={() => setIsLoanModalOpen(false)} onSave={handleSaveLoan} onDelete={handleDeleteLoan} initialData={editingLoan} isDarkMode={isDarkMode} showToast={showToast} />
               <SubscriptionModal isOpen={isSubModalOpen} onClose={() => setIsSubModalOpen(false)} onSave={handleSaveSub} onDelete={handleDeleteSub} initialData={editingSub} isDarkMode={isDarkMode} showToast={showToast} />
               <AddGoalModal isOpen={isAddGoalModalOpen} onClose={() => setIsAddGoalModalOpen(false)} onSave={handleSaveGoal} onDelete={handleDeleteGoal} initialData={editingGoal} isDarkMode={isDarkMode} showToast={showToast} />
               <WalletDetailsModal isOpen={isWalletModalOpen} onClose={() => setIsWalletModalOpen(false)} onSave={handleSaveWallet} wallet={selectedWallet} isDarkMode={isDarkMode} showToast={showToast} isNew={!selectedWallet} />
               
-              {/* FIXED: Changed 'fixed' to 'absolute' to contain the dock within the mobile frame */}
               <div className={`absolute bottom-0 w-full border-t px-6 py-4 pb-8 flex justify-between items-center z-40 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-100'}`}>{['home', 'stats', 'wallet', 'suggestions', 'profile'].map((tab) => { const isActive = activeTab === tab; const Icons = { home: Home, stats: PieChart, wallet: Wallet, suggestions: Sparkles, profile: Settings }; const Icon = Icons[tab]; return (<button key={tab} onClick={() => setActiveTab(tab)} className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? 'scale-110' : 'text-gray-400 hover:text-gray-500 scale-100'}`} style={{ color: isActive ? theme.royalBlue : isDarkMode ? '#6b7280' : undefined }}><Icon size={24} strokeWidth={isActive ? 2.5 : 2} />{isActive && (<span className="w-1 h-1 rounded-full bg-current animate-fade-in mt-1"></span>)}</button>); })}</div>
               
               <NotificationSidebar 
